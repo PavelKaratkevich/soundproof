@@ -1,11 +1,11 @@
 package storage
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"os"
 
+	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 
 	Domain "soundproof/internal/domain"
@@ -13,12 +13,13 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+// PostgreSQL implements the interface Storage
 type PostgreSQL struct {
 	db *sqlx.DB
 }
 
-func (s *PostgreSQL) RegisterUserInDB(ctx context.Context, req Domain.UserRegistrationRequest) (int, error) {
-	sqlRequest := "INSERT INTO users (Username, Password, Fullname, Email) VALUES ($1, $2, $3, $4)"
+func (s *PostgreSQL) RegisterUserInDB(ctx *gin.Context, req Domain.UserRegistrationRequest) (int, error) {
+	sqlRequest := "INSERT INTO public.users (firstname, password, full_name, email) VALUES ($1, $2, $3, $4)"
 
 	res, err := s.db.Exec(sqlRequest, req.Username, req.Password, req.FullName, req.Email)
 	if err != nil {

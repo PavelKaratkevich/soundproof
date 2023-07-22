@@ -1,4 +1,6 @@
-package Domain
+package domain
+
+import "github.com/gin-gonic/gin"
 
 type UserRegistrationRequest struct {
 	Username string `json:"username" binding:"required,alphanum"`
@@ -9,4 +11,9 @@ type UserRegistrationRequest struct {
 
 type UserRegistrationResponse struct {
 	UserID int `json:"user_id" binding:"required"`
+}
+
+// Port for database implementation
+type Storage interface {
+	RegisterUserInDB(ctx *gin.Context, req UserRegistrationRequest) (int, error)
 }
