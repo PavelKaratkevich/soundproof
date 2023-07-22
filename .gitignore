@@ -1,0 +1,17 @@
+.env
+*.txt
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+vendor/
+go.work
+.idea
+postgres-data/
+db-data/
+.vscode/
+*.log
+node_modules/
