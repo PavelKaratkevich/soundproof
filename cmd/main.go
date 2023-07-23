@@ -45,7 +45,10 @@ func main() {
 
 // define routes
 	router.POST("/auth/register", handler.RegisterUser)
+	router.POST("auth/login", handler.Login)
 	if err := router.Run(); err != nil {
 		log.Fatalf("Failed to run server: %v", err)
 	}
+
+	
 }

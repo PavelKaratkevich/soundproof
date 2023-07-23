@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 
@@ -10,6 +11,7 @@ import (
 
 	"soundproof/config"
 	Domain "soundproof/internal/domain/model"
+	domain "soundproof/internal/domain/model"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -25,7 +27,7 @@ func (s *PostgreSQL) RegisterUserInDB(ctx *gin.Context, req Domain.UserRegistrat
 
 	sqlRequest := "INSERT INTO public.users (first_name, last_name, email, password) VALUES ($1, $2, $3, $4)"
 
-	res, err := s.db.Exec(sqlRequest, req.FirstName, req.LastName, req.Password, req.Email)
+	res, err := s.db.Exec(sqlRequest, req.FirstName, req.LastName, req.Email, req.Password)
 	if err != nil {
 		return 0, err
 	}
@@ -33,6 +35,33 @@ func (s *PostgreSQL) RegisterUserInDB(ctx *gin.Context, req Domain.UserRegistrat
 	rowsAdded, _ := res.RowsAffected()
 
 	return int(rowsAdded), nil
+}
+
+func (s *PostgreSQL) CheckUserCredentials(ctx *gin.Context, req domain.LoginRequest) (bool, error) {
+	s.logger.Debug(">>>>>> Checking if credentials are valid...................")
+	log.Printf(req.Email)
+
+	var user domain.User
+
+	sqlRequest := "SELECT * FROM public.users WHERE email = $1"
+
+	if err := s.db.Get(&user, sqlRequest, req.Email); err != nil {
+		if err == sql.ErrNoRows {
+			return false, fmt.Errorf("user not found")
+		} else {
+			return false, err
+		}
+	}
+
+	if req.Email != user.Email || req.Password != user.Password {
+		return false, fmt.Errorf("please provide valid credentials")
+	}
+
+	if req.Email == user.Email || req.Password == user.Password {
+		return true, nil
+	} else {
+		return false, fmt.Errorf("unknown server error")
+	}
 }
 
 func ConnectPostgresDB(logger *zap.Logger, cfg *config.Config) *sqlx.DB {

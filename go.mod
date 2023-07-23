@@ -3,6 +3,7 @@ module soundproof
 go 1.19
 
 require (
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.9.1
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/kelseyhightower/envconfig v1.4.0

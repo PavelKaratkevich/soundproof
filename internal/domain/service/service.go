@@ -1,7 +1,7 @@
 package service
 
 import (
-	"soundproof/internal/domain/model"
+	domain "soundproof/internal/domain/model"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -20,9 +20,17 @@ func (s *UserService) RegisterUser(c *gin.Context, req domain.UserRegistrationRe
 	return res, nil
 }
 
-func NewUserService(logger  *zap.Logger, s domain.Storage) *UserService {
+func (s *UserService) CheckCredentials(c *gin.Context, req domain.LoginRequest) (bool, error) {
+	ifValid, err := s.storage.CheckUserCredentials(c, req)
+	if err != nil {
+		return false, err
+	}
+	return ifValid, nil
+}
+
+func NewUserService(logger *zap.Logger, s domain.Storage) *UserService {
 	return &UserService{
 		storage: s,
-		logger: logger,
+		logger:  logger,
 	}
 }
