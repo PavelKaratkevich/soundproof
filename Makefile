@@ -7,8 +7,18 @@ createdb:
 dropdb:
 	docker exec -it postgres_soundproff dropdb soundproof_db
 
+lint-host: ## Run golangci-lint directly on host
+	@echo "> Linting..."
+	golangci-lint run -c .golangci.yml -v
+	@echo "> Done!"
+
 start:
-	go run cmd/main.go
+	make postgres
+	make createdb
+	make start server
+
+start-server:
+	DB_DRIVER=postgres DB_USER=root DB_PASSWORD=postgres DB_HOST=localhost DB_PORT=5432 DB_TABLE=soundproof_db go run cmd/main.go  
 
 migrateup:
 	migrate -path db/migration -database "postgresql://root:postgres@localhost:5432/soundproof_db?sslmode=disable" -verbose up
@@ -22,4 +32,4 @@ migratedown:
 # migratedown1:
 # 	migrate -path db/migration -database "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable" -verbose down 1
 
-.PHONY: postgres createdb dropdb start migrateup
+.PHONY: postgres createdb dropdb start migrateup start-server lint-host

@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// UserService implements interface Service 
+// UserService implements interface Service. 
 type UserService struct {
 	storage domain.Storage
 }

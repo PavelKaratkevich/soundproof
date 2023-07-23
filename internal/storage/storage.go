@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"soundproof/config"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -13,7 +14,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-// PostgreSQL implements the interface Storage
+// PostgreSQL implements the interface Storage.
 type PostgreSQL struct {
 	db *sqlx.DB
 }
@@ -31,8 +32,7 @@ func (s *PostgreSQL) RegisterUserInDB(ctx *gin.Context, req Domain.UserRegistrat
 	return int(rowsAdded), nil
 }
 
-func ConnectPostgresDB() *sqlx.DB {
-
+func ConnectPostgresDB(conf *config.Config) *sqlx.DB {
 	// load environment variables
 	DB_DRIVER := os.Getenv("DB_DRIVER")
 	DB_HOST := os.Getenv("DB_HOST")

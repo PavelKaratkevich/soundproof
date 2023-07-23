@@ -3,7 +3,6 @@ package transport
 import (
 	"log"
 	"net/http"
-
 	"soundproof/internal/domain"
 	"soundproof/internal/domain/service"
 
@@ -15,7 +14,6 @@ type handler struct {
 }
 
 func (h handler) RegisterUser(c *gin.Context) {
-
 	var newRequest domain.UserRegistrationRequest
 
 	// Validating if all the fields are filled in

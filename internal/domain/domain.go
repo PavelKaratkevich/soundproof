@@ -13,7 +13,7 @@ type UserRegistrationResponse struct {
 	UserID int `json:"user_id" binding:"required"`
 }
 
-// Port for database implementation
+// Port for database implementation.
 type Storage interface {
 	RegisterUserInDB(ctx *gin.Context, req UserRegistrationRequest) (int, error)
 }
