@@ -3,14 +3,14 @@ package domain
 import "github.com/gin-gonic/gin"
 
 type UserRegistrationRequest struct {
-	Username string `json:"username" binding:"required,alphanum"`
+	FirstName string `json:"first_name" binding:"required,alphanum"`
+	LastName string `json:"last_name" binding:"required"`
 	Password string `json:"password" binding:"required,min=6"`
-	FullName string `json:"full_name" binding:"required"`
 	Email    string `json:"email" binding:"required,email"`
 }
 
 type UserRegistrationResponse struct {
-	UserID int `json:"user_id" binding:"required"`
+	userID int `json:"user_id" binding:"required"`
 }
 
 // Port for database implementation.

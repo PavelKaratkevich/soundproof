@@ -18,7 +18,7 @@ start:
 	make start server
 
 start-server:
-	DB_DRIVER=postgres DB_USER=root DB_PASSWORD=postgres DB_HOST=localhost DB_PORT=5432 DB_TABLE=soundproof_db go run cmd/main.go  
+	go run cmd/main.go  
 
 migrateup:
 	migrate -path db/migration -database "postgresql://root:postgres@localhost:5432/soundproof_db?sslmode=disable" -verbose up

@@ -18,6 +18,12 @@ type Config struct {
 	Connection struct {
 		ServerHost string `envconfig:"SERVER_HOST" default:"localhost"`
 		ServerPort int    `envconfig:"SERVER_PORT" default:"8080"`
+
+		DB_DRIVER string `envconfig:"DB_DRIVER" default:"postgres"`
+		DB_USER string `envconfig:"DB_USER" default:"root"`
+		DB_PASSWORD string `envconfig:"DB_PASSWORD" default:"postgres"`
+		DB_PORT string `envconfig:"DB_PORT" default:"5432"`
+		DB_TABLE string `envconfig:"DB_TABLE" default:"soundproof_db"`
 	}
 }
 
