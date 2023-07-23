@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"soundproof/config"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
+	"go.uber.org/zap"
 
 	Domain "soundproof/internal/domain"
 
@@ -16,10 +16,13 @@ import (
 
 // PostgreSQL implements the interface Storage.
 type PostgreSQL struct {
+	logger *zap.Logger
 	db *sqlx.DB
 }
 
 func (s *PostgreSQL) RegisterUserInDB(ctx *gin.Context, req Domain.UserRegistrationRequest) (int, error) {
+	s.logger.Debug(">>>>>> Updating the database with user registration form")
+
 	sqlRequest := "INSERT INTO public.users (firstname, password, full_name, email) VALUES ($1, $2, $3, $4)"
 
 	res, err := s.db.Exec(sqlRequest, req.Username, req.Password, req.FullName, req.Email)
@@ -32,7 +35,10 @@ func (s *PostgreSQL) RegisterUserInDB(ctx *gin.Context, req Domain.UserRegistrat
 	return int(rowsAdded), nil
 }
 
-func ConnectPostgresDB(conf *config.Config) *sqlx.DB {
+func ConnectPostgresDB(logger *zap.Logger) *sqlx.DB {
+
+	logger.Debug(">>>>>>> Connecting PostgreSQL database")
+
 	// load environment variables
 	DB_DRIVER := os.Getenv("DB_DRIVER")
 	DB_HOST := os.Getenv("DB_HOST")
@@ -44,19 +50,20 @@ func ConnectPostgresDB(conf *config.Config) *sqlx.DB {
 	// connect DB
 	db, err := sqlx.Open(DB_DRIVER, fmt.Sprintf("postgresql://%v:%v@%v:%v/%v?sslmode=disable", DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_TABLE))
 	if err != nil {
-		log.Fatalf("Error while opening DB: ", err)
+		log.Fatalf("Error while opening DB: %v", err)
 	}
 
 	// ping database
 	err = db.Ping()
 	if err != nil {
-		log.Fatalf("Error while pinging the database: ", err)
+		log.Fatalf("Error while pinging the database: %v", err)
 	}
 	return db
 }
 
-func NewPostgreSQL(conn *sqlx.DB) *PostgreSQL {
+func NewPostgreSQL(logger  *zap.Logger, conn *sqlx.DB) *PostgreSQL {
 	return &PostgreSQL{
 		db: conn,
+		logger: logger,
 	}
 }

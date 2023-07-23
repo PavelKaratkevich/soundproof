@@ -7,9 +7,11 @@ import (
 	"soundproof/internal/domain/service"
 
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 type handler struct {
+	logger  *zap.Logger
 	service service.UserService
 }
 
@@ -34,8 +36,9 @@ func (h handler) RegisterUser(c *gin.Context) {
 	}
 }
 
-func NewHandler(s *service.UserService) *handler {
+func NewHandler(logger  *zap.Logger, s *service.UserService) *handler {
 	return &handler{
 		service: *s,
+		logger: logger,
 	}
 }

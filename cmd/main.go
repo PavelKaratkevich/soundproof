@@ -32,10 +32,10 @@ func main() {
 	// Log the config.
 	logger.Debug("config", zap.Any("config", cfg))
 
-	db := storage.ConnectPostgresDB(cfg)
-	storage := storage.NewPostgreSQL(db)
-	service := service.NewUserService(storage)
-	handler := transport.NewHandler(service)
+	db := storage.ConnectPostgresDB(logger)
+	storage := storage.NewPostgreSQL(logger, db)
+	service := service.NewUserService(logger, storage)
+	handler := transport.NewHandler(logger, service)
 
 	router := gin.Default()
 

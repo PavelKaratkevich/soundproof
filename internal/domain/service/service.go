@@ -4,10 +4,11 @@ import (
 	"soundproof/internal/domain"
 
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
-// UserService implements interface Service. 
 type UserService struct {
+	logger  *zap.Logger
 	storage domain.Storage
 }
 
@@ -19,8 +20,9 @@ func (s *UserService) RegisterUser(c *gin.Context, req domain.UserRegistrationRe
 	return res, nil
 }
 
-func NewUserService(s domain.Storage) *UserService {
+func NewUserService(logger  *zap.Logger, s domain.Storage) *UserService {
 	return &UserService{
 		storage: s,
+		logger: logger,
 	}
 }
