@@ -6,17 +6,33 @@ import (
 	"soundproof/internal/domain/service"
 	"soundproof/internal/storage"
 	"soundproof/internal/transport"
+	"soundproof/pkg/logging"
 
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 func main() {
-	configuration, err := config.NewConfig()
+	cfg, err := config.NewConfig()
 	if err != nil {
 		log.Fatalf("Unable to load configuration")
 	}
 
-	db := storage.ConnectPostgresDB(configuration)
+	// Create a new logger.
+	logger := logging.Logger(cfg.Logging.Format, cfg.Logging.Level)
+
+	// Sync the logger before exiting.
+	defer func(logger *zap.Logger) {
+		err = logger.Sync()
+		if err != nil {
+			log.Fatalf("syncing logger: %v", err)
+		}
+	}(logger)
+
+	// Log the config.
+	logger.Debug("config", zap.Any("config", cfg))
+
+	db := storage.ConnectPostgresDB(cfg)
 	storage := storage.NewPostgreSQL(db)
 	service := service.NewUserService(storage)
 	handler := transport.NewHandler(service)
