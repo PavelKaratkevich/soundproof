@@ -22,6 +22,7 @@ type Config struct {
 		DB_DRIVER string `envconfig:"DB_DRIVER" default:"postgres"`
 		DB_USER string `envconfig:"DB_USER" default:"root"`
 		DB_PASSWORD string `envconfig:"DB_PASSWORD" default:"postgres"`
+		DB_HOST string    `envconfig:"DB_HOST" default:"localhost"`
 		DB_PORT string `envconfig:"DB_PORT" default:"5432"`
 		DB_TABLE string `envconfig:"DB_TABLE" default:"soundproof_db"`
 	}

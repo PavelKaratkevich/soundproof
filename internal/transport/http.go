@@ -3,7 +3,7 @@ package transport
 import (
 	"log"
 	"net/http"
-	"soundproof/internal/domain"
+	"soundproof/internal/domain/model"
 	"soundproof/internal/domain/service"
 
 	"github.com/gin-gonic/gin"

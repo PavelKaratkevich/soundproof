@@ -9,7 +9,7 @@ import (
 	"go.uber.org/zap"
 
 	"soundproof/config"
-	Domain "soundproof/internal/domain"
+	Domain "soundproof/internal/domain/model"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -40,7 +40,7 @@ func ConnectPostgresDB(logger *zap.Logger, cfg *config.Config) *sqlx.DB {
 	logger.Debug(">>>>>>> Connecting PostgreSQL database")
 
 	// connect DB
-	db, err := sqlx.Open(cfg.Connection.DB_DRIVER, fmt.Sprintf("postgresql://%v:%v@%v:%v/%v?sslmode=disable", cfg.Connection.DB_USER, cfg.Connection.DB_PASSWORD, cfg.Connection.ServerHost, cfg.Connection.DB_PORT, cfg.Connection.DB_TABLE))
+	db, err := sqlx.Open(cfg.Connection.DB_DRIVER, fmt.Sprintf("postgresql://%v:%v@%v:%v/%v?sslmode=disable", cfg.Connection.DB_USER, cfg.Connection.DB_PASSWORD, cfg.Connection.DB_HOST, cfg.Connection.DB_PORT, cfg.Connection.DB_TABLE))
 	if err != nil {
 		log.Fatalf("Error while opening DB: %v", err)
 	}

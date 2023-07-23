@@ -1,7 +1,7 @@
 package service
 
 import (
-	"soundproof/internal/domain"
+	"soundproof/internal/domain/model"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
