@@ -20,6 +20,14 @@ func (s *UserService) RegisterUser(c *gin.Context, req domain.UserRegistrationRe
 	return res, nil
 }
 
+func (s *UserService) GetByID(c *gin.Context, id int) (*domain.ProfileResponse, error) {
+	res, err := s.storage.GetUserByID(c, id)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
 func (s *UserService) CheckCredentials(c *gin.Context, req domain.LoginRequest) (bool, *domain.LoginResponse, error) {
 	ifValid, user, err := s.storage.CheckUserCredentials(c, req)
 	if err != nil {

@@ -2,15 +2,14 @@ package jwtauth
 
 import (
 	"fmt"
-	"log"
 	"net/http"
-	"os"
 	"strings"
 	"time"
 
+	"soundproof/config"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/kelseyhightower/envconfig"
-	"soundproof/config"
 )
 
 type TokenDetails struct {
@@ -34,15 +33,10 @@ func CreateToken() (*TokenDetails, error) {
 	atClaims["exp"] = td.AtExpires
 
 	// load config file to get SECRET from configuration setup
-	cfg := &config.Config{}
-	err = envconfig.Process("", cfg)
-	if err != nil {
-		return nil, err
-	}
+	cfg := loadConfigFile()
 
 	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
 	td.AccessToken, err = at.SignedString([]byte(cfg.Authorization.ACCESS_SECRET))
-	log.Println(cfg.Authorization.ACCESS_SECRET)
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +46,6 @@ func CreateToken() (*TokenDetails, error) {
 
 	rt := jwt.NewWithClaims(jwt.SigningMethodHS256, rtClaims)
 	td.RefreshToken, err = rt.SignedString([]byte(cfg.Authorization.REFRESH_SECRET))
-	log.Println(cfg.Authorization.REFRESH_SECRET)
 	if err != nil {
 		return nil, err
 	}
@@ -71,11 +64,15 @@ func ExtractToken(r *http.Request) string {
 
 func VerifyToken(r *http.Request) (*jwt.Token, error) {
 	tokenString := ExtractToken(r)
+
+	// load config file to get SECRET from configuration setup
+	cfg := loadConfigFile()
+
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(os.Getenv("ACCESS_SECRET")), nil
+		return []byte(cfg.Authorization.ACCESS_SECRET), nil
 	})
 	if err != nil {
 		return nil, err
@@ -92,4 +89,13 @@ func TokenValid(r *http.Request) error {
 		return err
 	}
 	return nil
+}
+
+func loadConfigFile() *config.Config {
+	cfg := &config.Config{}
+	err := envconfig.Process("", cfg)
+	if err != nil {
+		return nil
+	}
+	return cfg
 }

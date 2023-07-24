@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 
@@ -37,34 +36,44 @@ func (s *PostgreSQL) RegisterUserInDB(ctx *gin.Context, req Domain.UserRegistrat
 	return int(rowsAdded), nil
 }
 
+func (s *PostgreSQL) GetUserByID(ctx *gin.Context, id int) (*domain.ProfileResponse, error) {
+
+	var user domain.ProfileResponse
+
+	sqlRequest := "SELECT id, first_name, last_name, email, created_at FROM public.users WHERE id = $1"
+
+	err := s.db.Get(&user, sqlRequest, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
 func (s *PostgreSQL) CheckUserCredentials(ctx *gin.Context, req domain.LoginRequest) (bool, *domain.LoginResponse, error) {
 	s.logger.Debug(">>>>>> Checking if credentials are valid...................")
-	log.Printf(req.Email)
 
 	var user domain.User
 
 	sqlRequest := "SELECT * FROM public.users WHERE email = $1"
 
-	if err := s.db.Get(&user, sqlRequest, req.Email); err != nil {
-		if err == sql.ErrNoRows {
-			return false, nil, fmt.Errorf("user not found")
-		} else {
-			return false, nil, err
-		}
+	err := s.db.Get(&user, sqlRequest, req.Email)
+	if err != nil {
+		return false, nil, err
 	}
 
-	if req.Email != user.Email || req.Password != user.Password {
-		return false, nil, fmt.Errorf("please provide valid credentials")
+	if req.Password != user.Password {
+		return false, nil, fmt.Errorf("wrong password")
 	}
 
 	// if creds are OK, we return user info (all but password)
 	if req.Email == user.Email || req.Password == user.Password {
 		return true, &domain.LoginResponse{
-			ID: user.ID,
+			ID:        user.ID,
 			FirstName: user.FirstName,
-			LastName: user.LastName,
-			Email: user.Email,
-			Created: user.Created,
+			LastName:  user.LastName,
+			Email:     user.Email,
+			Created:   user.Created,
 		}, nil
 	} else {
 		return false, nil, fmt.Errorf("unknown server error")
