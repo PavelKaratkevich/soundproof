@@ -37,9 +37,9 @@ type LoginResponse struct {
 	RefreshToken string `json:"refresh_token" db:"refresh_token"`
 }
 
-type UserRegistrationResponse struct {
-	userID int `json:"user_id" binding:"required"`
-}
+// type UserRegistrationResponse struct {
+// 	userID int `json:"user_id" binding:"required"`
+// }
 
 // Port for database implementation.
 type Storage interface {

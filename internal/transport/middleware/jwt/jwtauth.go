@@ -2,19 +2,16 @@ package jwtauth
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/kelseyhightower/envconfig"
+	"soundproof/config"
 )
-
-// // Mock user with pre-defined login and password
-// var user = User{
-// 	Username: "username",
-// 	Password: "password",
-// }
 
 type TokenDetails struct {
 	AccessToken  string
@@ -30,25 +27,32 @@ func CreateToken() (*TokenDetails, error) {
 	td.RtExpires = time.Now().Add(time.Hour * 24 * 7).Unix()
 
 	var err error
+
 	//Creating Access Token
-	os.Getenv("ACCESS_SECRET")
 	atClaims := jwt.MapClaims{}
 	atClaims["authorized"] = true
 	atClaims["exp"] = td.AtExpires
 
-	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
-	td.AccessToken, err = at.SignedString([]byte(os.Getenv("ACCESS_SECRET")))
+	// load config file to get SECRET from configuration setup
+	cfg := &config.Config{}
+	err = envconfig.Process("", cfg)
 	if err != nil {
 		return nil, err
 	}
 
-	//Creating Refresh Token
-	os.Getenv("REFRESH_SECRET")
+	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
+	td.AccessToken, err = at.SignedString([]byte(cfg.Authorization.ACCESS_SECRET))
+	log.Println(cfg.Authorization.ACCESS_SECRET)
+	if err != nil {
+		return nil, err
+	}
+
 	rtClaims := jwt.MapClaims{}
 	rtClaims["exp"] = td.RtExpires
 
 	rt := jwt.NewWithClaims(jwt.SigningMethodHS256, rtClaims)
-	td.RefreshToken, err = rt.SignedString([]byte(os.Getenv("REFRESH_SECRET")))
+	td.RefreshToken, err = rt.SignedString([]byte(cfg.Authorization.REFRESH_SECRET))
+	log.Println(cfg.Authorization.REFRESH_SECRET)
 	if err != nil {
 		return nil, err
 	}

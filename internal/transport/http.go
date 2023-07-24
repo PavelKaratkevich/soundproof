@@ -60,10 +60,6 @@ func (h Handler) Login(c *gin.Context) {
 		user.AccessToken = ts.AccessToken
 		user.RefreshToken = ts.RefreshToken
 
-		// tokens := map[string]string{
-		// 	"access_token":  ts.AccessToken,
-		// 	"refresh_token": ts.RefreshToken,
-		// }
 		c.JSON(http.StatusOK, user)
 	}	
 	

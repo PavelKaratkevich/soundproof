@@ -26,6 +26,10 @@ type Config struct {
 		DB_PORT string `envconfig:"DB_PORT" default:"5432"`
 		DB_TABLE string `envconfig:"DB_TABLE" default:"soundproof_db"`
 	}
+	Authorization struct {
+		ACCESS_SECRET string `envconfig:"ACCESS_SECRET" default:"1234567890"`
+		REFRESH_SECRET string `envconfig:"REFRESH_SECRET" default:"0987654321"`
+	}
 }
 
 // NewConfig returns a new Config instance, populated with environment variables and defaults.
