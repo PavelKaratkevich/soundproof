@@ -46,7 +46,7 @@ func (h Handler) Login(c *gin.Context) {
 		return
 	} 
 
-	ifValid, err := h.service.CheckCredentials(c, req)
+	ifValid, user, err := h.service.CheckCredentials(c, req)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 	} 
@@ -57,11 +57,14 @@ func (h Handler) Login(c *gin.Context) {
 			c.JSON(http.StatusUnprocessableEntity, err.Error())
 			return
 		}
-		tokens := map[string]string{
-			"access_token":  ts.AccessToken,
-			"refresh_token": ts.RefreshToken,
-		}
-		c.JSON(http.StatusOK, tokens)
+		user.AccessToken = ts.AccessToken
+		user.RefreshToken = ts.RefreshToken
+
+		// tokens := map[string]string{
+		// 	"access_token":  ts.AccessToken,
+		// 	"refresh_token": ts.RefreshToken,
+		// }
+		c.JSON(http.StatusOK, user)
 	}	
 	
 }

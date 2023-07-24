@@ -37,7 +37,7 @@ func (s *PostgreSQL) RegisterUserInDB(ctx *gin.Context, req Domain.UserRegistrat
 	return int(rowsAdded), nil
 }
 
-func (s *PostgreSQL) CheckUserCredentials(ctx *gin.Context, req domain.LoginRequest) (bool, error) {
+func (s *PostgreSQL) CheckUserCredentials(ctx *gin.Context, req domain.LoginRequest) (bool, *domain.LoginResponse, error) {
 	s.logger.Debug(">>>>>> Checking if credentials are valid...................")
 	log.Printf(req.Email)
 
@@ -47,20 +47,27 @@ func (s *PostgreSQL) CheckUserCredentials(ctx *gin.Context, req domain.LoginRequ
 
 	if err := s.db.Get(&user, sqlRequest, req.Email); err != nil {
 		if err == sql.ErrNoRows {
-			return false, fmt.Errorf("user not found")
+			return false, nil, fmt.Errorf("user not found")
 		} else {
-			return false, err
+			return false, nil, err
 		}
 	}
 
 	if req.Email != user.Email || req.Password != user.Password {
-		return false, fmt.Errorf("please provide valid credentials")
+		return false, nil, fmt.Errorf("please provide valid credentials")
 	}
 
+	// if creds are OK, we return user info (all but password)
 	if req.Email == user.Email || req.Password == user.Password {
-		return true, nil
+		return true, &domain.LoginResponse{
+			ID: user.ID,
+			FirstName: user.FirstName,
+			LastName: user.LastName,
+			Email: user.Email,
+			Created: user.Created,
+		}, nil
 	} else {
-		return false, fmt.Errorf("unknown server error")
+		return false, nil, fmt.Errorf("unknown server error")
 	}
 }
 

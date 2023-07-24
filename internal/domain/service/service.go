@@ -20,12 +20,12 @@ func (s *UserService) RegisterUser(c *gin.Context, req domain.UserRegistrationRe
 	return res, nil
 }
 
-func (s *UserService) CheckCredentials(c *gin.Context, req domain.LoginRequest) (bool, error) {
-	ifValid, err := s.storage.CheckUserCredentials(c, req)
+func (s *UserService) CheckCredentials(c *gin.Context, req domain.LoginRequest) (bool, *domain.LoginResponse, error) {
+	ifValid, user, err := s.storage.CheckUserCredentials(c, req)
 	if err != nil {
-		return false, err
+		return false, nil, err
 	}
-	return ifValid, nil
+	return ifValid, user, nil
 }
 
 func NewUserService(logger *zap.Logger, s domain.Storage) *UserService {

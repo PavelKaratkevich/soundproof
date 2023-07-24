@@ -27,6 +27,16 @@ type LoginRequest struct {
 	Password string `json:"password" binding:"required"`
 }
 
+type LoginResponse struct {
+	ID        int       `json:"id"`
+	FirstName string    `json:"first_name" db:"first_name"`
+	LastName  string    `json:"last_name" db:"last_name"`
+	Email     string    `json:"email" db:"email"`
+	Created   time.Time `json:"created_at" db:"created_at"`
+	AccessToken string `json:"access_token" db:"access_token"`
+	RefreshToken string `json:"refresh_token" db:"refresh_token"`
+}
+
 type UserRegistrationResponse struct {
 	userID int `json:"user_id" binding:"required"`
 }
@@ -34,5 +44,5 @@ type UserRegistrationResponse struct {
 // Port for database implementation.
 type Storage interface {
 	RegisterUserInDB(ctx *gin.Context, req UserRegistrationRequest) (int, error)
-	CheckUserCredentials(ctx *gin.Context, req LoginRequest) (bool, error)
+	CheckUserCredentials(ctx *gin.Context, req LoginRequest) (bool, *LoginResponse, error)
 }
