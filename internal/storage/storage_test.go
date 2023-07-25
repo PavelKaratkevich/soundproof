@@ -40,7 +40,7 @@ func TestGetUserByIDSuccess(t *testing.T) {
 	require.Equal(t, http.StatusOK, rec.Code)
 }
 
-func TestGetUserByIDFail(t *testing.T) {
+func TestGetUserByIDFailWithNegativeID(t *testing.T) {
 
 	// Arrange
 	id := -1
@@ -100,4 +100,47 @@ func TestRegisterUserInDBFail(t *testing.T) {
 	_, err1 := mockStorage.RegisterUserInDB(&gin.Context{}, req)
 	require.Error(t, err)
 	require.Equal(t, err1, err)
+}
+
+func TestCheckUserCredentialsSuccess(t *testing.T) {
+	loginRequest := domain.LoginRequest{
+		Email: "p.korotkevitch@gmail.com",
+		Password: "12345",
+	}
+	loginResponse := &domain.LoginResponse	{
+		ID: 1,
+		FirstName: "Pavel",
+		LastName: "Karatkevich",
+		Email: "p.korotkevitch@gmail.com",
+		Created: time.Now(),
+		AccessToken: "12345",
+		RefreshToken: "54321",
+	}
+
+	ctr := gomock.NewController(t)
+	mockStorage := mock.NewMockStorage(ctr)
+	mockStorage.EXPECT().CheckUserCredentials(gomock.Any(), loginRequest).Times(1).Return(true, loginResponse, nil)
+
+	ifValid, userOutput, err := mockStorage.CheckUserCredentials(&gin.Context{}, loginRequest)
+	require.NoError(t, err)
+	require.True(t, ifValid)
+	require.Equal(t, loginResponse, userOutput)
+}
+
+func TestCheckUserCredentialsFail(t *testing.T) {
+	loginRequest := domain.LoginRequest{
+		Email: "p.korotkevitch@gmail.com",
+		Password: "12345",
+	}
+	error := fmt.Errorf("Please provide valid credentials")
+
+	ctr := gomock.NewController(t)
+	mockStorage := mock.NewMockStorage(ctr)
+	mockStorage.EXPECT().CheckUserCredentials(gomock.Any(), loginRequest).Times(1).Return(false, nil, error)
+
+	ifValid, userOutput, err := mockStorage.CheckUserCredentials(&gin.Context{}, loginRequest)
+	require.Nil(t, userOutput)
+	require.Error(t, err)
+	require.False(t, ifValid)
+	require.Equal(t, err, error)
 }
