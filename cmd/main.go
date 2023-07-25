@@ -5,7 +5,7 @@ import (
 	"soundproof/config"
 	"soundproof/internal/domain/service"
 	"soundproof/internal/storage"
-	"soundproof/internal/transport"
+	"soundproof/internal/transport/http"
 	"soundproof/pkg/logging"
 
 	"github.com/gin-gonic/gin"

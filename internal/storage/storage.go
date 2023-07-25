@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 
@@ -44,7 +45,11 @@ func (s *PostgreSQL) GetUserByID(ctx *gin.Context, id int) (*domain.ProfileRespo
 
 	err := s.db.Get(&user, sqlRequest, id)
 	if err != nil {
-		return nil, err
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("no results found")
+		} else {
+			return nil, err
+		}
 	}
 
 	return &user, nil

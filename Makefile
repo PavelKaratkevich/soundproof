@@ -32,4 +32,10 @@ migratedown:
 # migratedown1:
 # 	migrate -path db/migration -database "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable" -verbose down 1
 
-.PHONY: postgres createdb dropdb start migrateup start-server lint-host
+mock:
+	mockgen -package mock -destination internal/domain/model/mock/mock.go -source=internal/domain/model/domain.go
+
+test:
+	go test ./... -v -coverpkg=./...
+
+.PHONY: postgres createdb dropdb start migrateup start-server lint-host mock test

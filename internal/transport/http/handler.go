@@ -54,7 +54,7 @@ func (h Handler) GetUserByItsID(c *gin.Context) {
 	// validate if id is an integer, required, greater than 0
 	errs := validate.Var(id, "required,number")
 	if errs != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": errs.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": errs.Error()})
 		return
 	}
 
