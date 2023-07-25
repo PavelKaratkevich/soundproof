@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"reflect"
 	domain "soundproof/internal/domain/model"
-	"soundproof/internal/domain/service"
 	jwtauth "soundproof/internal/transport/middleware/jwt"
 	"strconv"
 
@@ -19,7 +18,7 @@ import (
 
 type Handler struct {
 	logger  *zap.Logger
-	service service.UserService
+	service domain.Service
 }
 
 func (h Handler) RegisterUser(c *gin.Context) {
@@ -59,11 +58,11 @@ func (h Handler) GetUserByItsID(c *gin.Context) {
 	}
 
 	// if valid, we need to make sure JWT token is valid
-		if err := jwtauth.TokenValid(c.Request); err != nil {
-			c.JSON(http.StatusForbidden, gin.H{"error": "Please provide a valid authentication token"})
-			return
-		}
-	
+	if err := jwtauth.TokenValid(c.Request); err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Please provide a valid authentication token"})
+		return
+	}
+
 	// convert id to integer to pass it to the service level as an argument
 	id_int, err := strconv.Atoi(id)
 
@@ -117,9 +116,9 @@ func (h Handler) Login(c *gin.Context) {
 
 }
 
-func NewHandler(logger *zap.Logger, s *service.UserService) *Handler {
+func NewHandler(logger *zap.Logger, s domain.Service) *Handler {
 	return &Handler{
-		service: *s,
+		service: s,
 		logger:  logger,
 	}
 }

@@ -45,7 +45,7 @@ func main() {
 
 // define routes
 	router.POST("/auth/register", handler.RegisterUser)
-	router.POST("auth/login", handler.Login)
+	router.POST("/auth/login", handler.Login)
 
 	router.GET("/user/profile/:id", handler.GetUserByItsID)
 

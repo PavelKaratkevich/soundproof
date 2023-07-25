@@ -59,3 +59,9 @@ type Storage interface {
 	CheckUserCredentials(ctx *gin.Context, req LoginRequest) (bool, *LoginResponse, error)
 	GetUserByID(ctx *gin.Context, id int) (*ProfileResponse, error)
 }
+
+type Service interface {
+	RegisterUser(c *gin.Context, req UserRegistrationRequest) (int, error)
+	GetByID(c *gin.Context, id int) (*ProfileResponse, error)
+	CheckCredentials(c *gin.Context, req LoginRequest) (bool, *LoginResponse, error)
+}
