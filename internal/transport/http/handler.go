@@ -58,6 +58,12 @@ func (h Handler) GetUserByItsID(c *gin.Context) {
 		return
 	}
 
+	// if valid, we need to make sure JWT token is valid
+		if err := jwtauth.TokenValid(c.Request); err != nil {
+			c.JSON(http.StatusForbidden, gin.H{"error": "Please provide a valid authentication token"})
+			return
+		}
+	
 	// convert id to integer to pass it to the service level as an argument
 	id_int, err := strconv.Atoi(id)
 
