@@ -34,6 +34,8 @@ migratedown:
 
 mock:
 	mockgen -package mock -destination internal/domain/model/mock/mock.go -source=internal/domain/model/domain.go
+	mockgen -package mock -destination internal/domain/service/mock/service_mock.go -source=internal/domain/service/service.go
+
 
 test:
 	go test ./... -v -coverpkg=./...

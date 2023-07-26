@@ -67,16 +67,83 @@ func (mr *MockStorageMockRecorder) GetUserByID(ctx, id interface{}) *gomock.Call
 }
 
 // RegisterUserInDB mocks base method.
-func (m *MockStorage) RegisterUserInDB(ctx *gin.Context, req domain.UserRegistrationRequest) (int, error) {
+func (m *MockStorage) RegisterUserInDB(ctx *gin.Context, req domain.UserRegistrationRequest) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "RegisterUserInDB", ctx, req)
-	ret0, _ := ret[0].(int)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // RegisterUserInDB indicates an expected call of RegisterUserInDB.
 func (mr *MockStorageMockRecorder) RegisterUserInDB(ctx, req interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RegisterUserInDB", reflect.TypeOf((*MockStorage)(nil).RegisterUserInDB), ctx, req)
+}
+
+// MockService is a mock of Service interface.
+type MockService struct {
+	ctrl     *gomock.Controller
+	recorder *MockServiceMockRecorder
+}
+
+// MockServiceMockRecorder is the mock recorder for MockService.
+type MockServiceMockRecorder struct {
+	mock *MockService
+}
+
+// NewMockService creates a new mock instance.
+func NewMockService(ctrl *gomock.Controller) *MockService {
+	mock := &MockService{ctrl: ctrl}
+	mock.recorder = &MockServiceMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockService) EXPECT() *MockServiceMockRecorder {
+	return m.recorder
+}
+
+// CheckCredentials mocks base method.
+func (m *MockService) CheckCredentials(c *gin.Context, req domain.LoginRequest) (bool, *domain.LoginResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CheckCredentials", c, req)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(*domain.LoginResponse)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// CheckCredentials indicates an expected call of CheckCredentials.
+func (mr *MockServiceMockRecorder) CheckCredentials(c, req interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckCredentials", reflect.TypeOf((*MockService)(nil).CheckCredentials), c, req)
+}
+
+// GetByID mocks base method.
+func (m *MockService) GetByID(c *gin.Context, id int) (*domain.ProfileResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByID", c, id)
+	ret0, _ := ret[0].(*domain.ProfileResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByID indicates an expected call of GetByID.
+func (mr *MockServiceMockRecorder) GetByID(c, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockService)(nil).GetByID), c, id)
+}
+
+// RegisterUser mocks base method.
+func (m *MockService) RegisterUser(c *gin.Context, req domain.UserRegistrationRequest) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RegisterUser", c, req)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RegisterUser indicates an expected call of RegisterUser.
+func (mr *MockServiceMockRecorder) RegisterUser(c, req interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RegisterUser", reflect.TypeOf((*MockService)(nil).RegisterUser), c, req)
 }

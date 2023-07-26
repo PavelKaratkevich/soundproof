@@ -3,11 +3,12 @@ package transport_test
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	domain "soundproof/internal/domain/model"
 	"soundproof/internal/domain/model/mock"
-	"soundproof/internal/domain/service"
 	transport "soundproof/internal/transport/http"
 	"testing"
 
@@ -22,15 +23,14 @@ func TestRegisterUserSuccess(t *testing.T) {
 	req := domain.UserRegistrationRequest{
 		FirstName: "Adam",
 		LastName:  "Smith",
-		Email:     "economy@gov.uk",
+		Email:     "classic_theory@economics.gov.uk",
 		Password:  "1234567890",
 	}
 
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	storage := mock.NewMockStorage(ctrl)
-	service := service.NewUserService(zap.NewNop(), storage)
+	service := mock.NewMockService(ctrl)
 	handler := transport.NewHandler(zap.NewNop(), service)
 
 	router := gin.Default()
@@ -40,8 +40,12 @@ func TestRegisterUserSuccess(t *testing.T) {
 	res, err := json.Marshal(req)
 	require.NoError(t, err)
 
+	service.EXPECT().RegisterUser(gomock.Any(), req).Times(1).Return(nil)
+
 	request, err := http.NewRequest(http.MethodPost, "/auth/register", bytes.NewReader(res))
 	require.NoError(t, err)
+
+	log.Println(request)
 
 	// Serving the request
 	recorder := httptest.NewRecorder()
@@ -49,51 +53,70 @@ func TestRegisterUserSuccess(t *testing.T) {
 
 	// Asserting the response code
 	require.Equal(t, http.StatusOK, recorder.Code)
-
-	// res, err := json.Marshal(req)
-	// require.NoError(t, err)
-
-	// request, err := http.NewRequest(http.MethodPost, "/auth/register/", bytes.NewReader(res))
-	// require.NoError(t, err)
-	// require.Equal(t, http.StatusOK, recorder.Code)
-
-	// router := gin.Default()
-	// router.ServeHTTP(recorder, request)
-	// require.NoError(t, err)
 }
 
-// func TestCreateUser(t *testing.T) {
+func TestRegisterUserFail(t *testing.T) {
 
-// 	user, psw := randomUser(t)
+	req := domain.UserRegistrationRequest{
+		FirstName: "Adam",
+		LastName:  "Smith",
+		Email:     "classic_theory@.economics.gov.uk",
+		Password:  "1234567890",
+	}
 
-// 	var arg = gin.H{
-// 		"username":  user.Username,
-// 		"full_name": user.FullName,
-// 		"email":     user.Email,
-// 		"password":  psw,
-// 	}
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
-// 	ctrl := gomock.NewController(t)
-// 	defer ctrl.Finish()
+	service := mock.NewMockService(ctrl)
+	handler := transport.NewHandler(zap.NewNop(), service)
 
-// 	store := mockdb.NewMockStore(ctrl)
+	router := gin.Default()
 
-// 	// build stubs
-// 	store.EXPECT().
-// 		CreateUser(gomock.Any(), gomock.Any()).
-// 		Times(1).
-// 		Return(user, nil)
+	router.POST("/auth/register", handler.RegisterUser)
 
-// 	server := newTestServer(t, store)
-// 	recorder := httptest.NewRecorder()
+	res, err := json.Marshal(req)
+	require.NoError(t, err)
 
-// 	res, err := json.Marshal(arg)
-// 	require.NoError(t, err)
+	request, _ := http.NewRequest(http.MethodPost, "/auth/register", bytes.NewReader(res))
 
-// 	request, err := http.NewRequest(http.MethodPost, "/users", bytes.NewReader(res))
-// 	require.NoError(t, err)
-// 	require.Equal(t, http.StatusOK, recorder.Code)
+	// Serving the request
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, request)
 
-// 	server.router.ServeHTTP(recorder, request)
-// 	require.NoError(t, err)
-// }
+	// Asserting the response code
+	require.Equal(t, http.StatusInternalServerError, recorder.Code)
+}
+
+func TestRegisterUserInternalError(t *testing.T) {
+
+	req := domain.UserRegistrationRequest{
+		FirstName: "Adam",
+		LastName:  "Smith",
+		Email:     "classic_theory@economics.gov.uk",
+		Password:  "1234567890",
+	}
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	service := mock.NewMockService(ctrl)
+	handler := transport.NewHandler(zap.NewNop(), service)
+
+	router := gin.Default()
+
+	router.POST("/auth/register", handler.RegisterUser)
+
+	res, err := json.Marshal(req)
+	require.NoError(t, err)
+
+	service.EXPECT().RegisterUser(gomock.Any(), req).Times(1).Return(fmt.Errorf("error"))
+
+	request, _ := http.NewRequest(http.MethodPost, "/auth/register", bytes.NewReader(res))
+
+	// Serving the request
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, request)
+
+	// Asserting the response code
+	require.Equal(t, http.StatusInternalServerError, recorder.Code)
+}

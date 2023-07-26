@@ -28,13 +28,13 @@ type LoginRequest struct {
 }
 
 type LoginResponse struct {
-	ID        int       `json:"id"`
-	FirstName string    `json:"first_name" db:"first_name"`
-	LastName  string    `json:"last_name" db:"last_name"`
-	Email     string    `json:"email" db:"email"`
-	Created   time.Time `json:"created_at" db:"created_at"`
-	AccessToken string `json:"access_token" db:"access_token"`
-	RefreshToken string `json:"refresh_token" db:"refresh_token"`
+	ID           int       `json:"id"`
+	FirstName    string    `json:"first_name" db:"first_name"`
+	LastName     string    `json:"last_name" db:"last_name"`
+	Email        string    `json:"email" db:"email"`
+	Created      time.Time `json:"created_at" db:"created_at"`
+	AccessToken  string    `json:"access_token" db:"access_token"`
+	RefreshToken string    `json:"refresh_token" db:"refresh_token"`
 }
 
 type ProfileResponse struct {
@@ -46,7 +46,7 @@ type ProfileResponse struct {
 }
 
 type GetProfileRequest struct {
-	ID        int       `json:"id" db:"id" binding:"required,alphanum"`
+	ID int `json:"id" db:"id" binding:"required,alphanum"`
 }
 
 // type UserRegistrationResponse struct {
@@ -55,13 +55,14 @@ type GetProfileRequest struct {
 
 // Port for database implementation.
 type Storage interface {
-	RegisterUserInDB(ctx *gin.Context, req UserRegistrationRequest) (int, error)
+	RegisterUserInDB(ctx *gin.Context, req UserRegistrationRequest) error
 	CheckUserCredentials(ctx *gin.Context, req LoginRequest) (bool, *LoginResponse, error)
 	GetUserByID(ctx *gin.Context, id int) (*ProfileResponse, error)
 }
 
+// Port for service implementation.
 type Service interface {
-	RegisterUser(c *gin.Context, req UserRegistrationRequest) (int, error)
+	RegisterUser(c *gin.Context, req UserRegistrationRequest) error
 	GetByID(c *gin.Context, id int) (*ProfileResponse, error)
 	CheckCredentials(c *gin.Context, req LoginRequest) (bool, *LoginResponse, error)
 }

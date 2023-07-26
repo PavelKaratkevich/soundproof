@@ -22,19 +22,17 @@ type PostgreSQL struct {
 	db     *sqlx.DB
 }
 
-func (s *PostgreSQL) RegisterUserInDB(ctx *gin.Context, req Domain.UserRegistrationRequest) (int, error) {
+func (s *PostgreSQL) RegisterUserInDB(ctx *gin.Context, req Domain.UserRegistrationRequest) error {
 	s.logger.Debug(">>>>>> Updating the database with user registration form")
 
 	sqlRequest := "INSERT INTO public.users (first_name, last_name, email, password) VALUES ($1, $2, $3, $4)"
 
-	res, err := s.db.Exec(sqlRequest, req.FirstName, req.LastName, req.Email, req.Password)
+	_, err := s.db.Exec(sqlRequest, req.FirstName, req.LastName, req.Email, req.Password)
 	if err != nil {
-		return 0, err
+		return err
 	}
 
-	rowsAdded, _ := res.RowsAffected()
-
-	return int(rowsAdded), nil
+	return nil
 }
 
 func (s *PostgreSQL) GetUserByID(ctx *gin.Context, id int) (*domain.ProfileResponse, error) {

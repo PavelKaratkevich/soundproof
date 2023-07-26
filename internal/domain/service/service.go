@@ -12,12 +12,12 @@ type UserService struct {
 	storage domain.Storage
 }
 
-func (s *UserService) RegisterUser(c *gin.Context, req domain.UserRegistrationRequest) (int, error) {
-	res, err := s.storage.RegisterUserInDB(c, req)
+func (s *UserService) RegisterUser(c *gin.Context, req domain.UserRegistrationRequest) error {
+	err := s.storage.RegisterUserInDB(c, req)
 	if err != nil {
-		return 0, err
+		return err
 	}
-	return res, nil
+	return nil
 }
 
 func (s *UserService) GetByID(c *gin.Context, id int) (*domain.ProfileResponse, error) {

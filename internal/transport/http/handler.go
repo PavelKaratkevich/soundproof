@@ -31,13 +31,13 @@ func (h Handler) RegisterUser(c *gin.Context) {
 		return
 	}
 
-	resp, err := h.service.RegisterUser(c, newRequest)
+	err := h.service.RegisterUser(c, newRequest)
 	if err != nil {
 		log.Printf("Error: %v", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	} else {
-		c.JSON(http.StatusOK, resp)
+		c.JSON(http.StatusOK, gin.H{"status:": "user has been registered successfully"})
 		return
 	}
 }

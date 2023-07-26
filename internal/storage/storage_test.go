@@ -59,7 +59,7 @@ func TestGetUserByIDFailWithNegativeID(t *testing.T) {
 
 	// Act
 	userResult, err1 := mockStorage.GetUserByID(&gin.Context{}, id)
-	
+
 	// Assert
 	require.Error(t, err1)
 	require.NotEqual(t, user, userResult)
@@ -69,51 +69,49 @@ func TestGetUserByIDFailWithNegativeID(t *testing.T) {
 func TestRegisterUserInDBSuccess(t *testing.T) {
 	req := domain.UserRegistrationRequest{
 		FirstName: "Pavel",
-		LastName: "Karatkevich",
-		Email: "p.korotkevitch@gmail.com",
-		Password: "12345",
+		LastName:  "Karatkevich",
+		Email:     "p.korotkevitch@gmail.com",
+		Password:  "12345",
 	}
 
 	ctr := gomock.NewController(t)
 	mockStorage := mock.NewMockStorage(ctr)
-	mockStorage.EXPECT().RegisterUserInDB(gomock.Any(), req).Times(1).Return(1, nil)
+	mockStorage.EXPECT().RegisterUserInDB(gomock.Any(), req).Times(1).Return(nil)
 
-	userResult, err := mockStorage.RegisterUserInDB(&gin.Context{}, req)
+	err := mockStorage.RegisterUserInDB(&gin.Context{}, req)
 	require.NoError(t, err)
-	require.Equal(t, 1, userResult)
 }
 
 func TestRegisterUserInDBFail(t *testing.T) {
 	req := domain.UserRegistrationRequest{
 		FirstName: "Pavel",
-		LastName: "Karatkevich",
-		Email: "p.korotkevitch@gmail.com",
-		Password: "12345",
+		LastName:  "Karatkevich",
+		Email:     "p.korotkevitch@gmail.com",
+		Password:  "12345",
 	}
 
 	err := fmt.Errorf("Error")
 
 	ctr := gomock.NewController(t)
 	mockStorage := mock.NewMockStorage(ctr)
-	mockStorage.EXPECT().RegisterUserInDB(gomock.Any(), req).Times(1).Return(0, err)
+	mockStorage.EXPECT().RegisterUserInDB(gomock.Any(), req).Times(1).Return(err)
 
-	_, err1 := mockStorage.RegisterUserInDB(&gin.Context{}, req)
+	err = mockStorage.RegisterUserInDB(&gin.Context{}, req)
 	require.Error(t, err)
-	require.Equal(t, err1, err)
 }
 
 func TestCheckUserCredentialsSuccess(t *testing.T) {
 	loginRequest := domain.LoginRequest{
-		Email: "p.korotkevitch@gmail.com",
+		Email:    "p.korotkevitch@gmail.com",
 		Password: "12345",
 	}
-	loginResponse := &domain.LoginResponse	{
-		ID: 1,
-		FirstName: "Pavel",
-		LastName: "Karatkevich",
-		Email: "p.korotkevitch@gmail.com",
-		Created: time.Now(),
-		AccessToken: "12345",
+	loginResponse := &domain.LoginResponse{
+		ID:           1,
+		FirstName:    "Pavel",
+		LastName:     "Karatkevich",
+		Email:        "p.korotkevitch@gmail.com",
+		Created:      time.Now(),
+		AccessToken:  "12345",
 		RefreshToken: "54321",
 	}
 
@@ -129,7 +127,7 @@ func TestCheckUserCredentialsSuccess(t *testing.T) {
 
 func TestCheckUserCredentialsFail(t *testing.T) {
 	loginRequest := domain.LoginRequest{
-		Email: "p.korotkevitch@gmail.com",
+		Email:    "p.korotkevitch@gmail.com",
 		Password: "12345",
 	}
 	error := fmt.Errorf("Please provide valid credentials")
