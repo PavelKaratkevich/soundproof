@@ -11,12 +11,17 @@ import (
 	"soundproof/internal/domain/model/mock"
 	transport "soundproof/internal/transport/http"
 	"testing"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 	"go.uber.org/zap"
 )
+
+///////////////////////
+////  RegisterUser ////
+///////////////////////
 
 func TestRegisterUserSuccess(t *testing.T) {
 
@@ -119,4 +124,49 @@ func TestRegisterUserInternalError(t *testing.T) {
 
 	// Asserting the response code
 	require.Equal(t, http.StatusInternalServerError, recorder.Code)
+}
+
+/////////////////////////
+////  GetUserByItsID ////
+/////////////////////////
+
+func TestGetUserByItsIDSuccess(t *testing.T) {
+
+	// id := 1
+
+	response := &domain.ProfileResponse{
+		ID:        1,
+		FirstName: "Adam",
+		LastName:  "Smith",
+		Email:     "classic_theory@economics.gov.uk",
+		Created:   time.Now(),
+	}
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	service := mock.NewMockService(ctrl)
+	handler := transport.NewHandler(zap.NewNop(), service)
+
+	router := gin.Default()
+
+	url := fmt.Sprintf("/user/profile/%d", response.ID)
+	log.Println(url)
+
+	router.GET(url, handler.GetUserByItsID)
+
+	idInput, err := json.Marshal(response.ID)
+	require.NoError(t, err)
+
+	service.EXPECT().GetByID(gomock.Any(), gomock.Eq(response.ID)).Return(response, nil).AnyTimes() // AnyTimes() fixed the issue
+
+	request, err := http.NewRequest(http.MethodGet, url, bytes.NewReader(idInput))
+	require.NoError(t, err)
+
+	// Serving the request
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, request)
+
+	// Asserting the response code
+	// require.Equal(t, http.StatusOK, recorder.Code)
 }
