@@ -2,6 +2,7 @@ package transport_test
 
 import (
 	"bytes"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -10,6 +11,7 @@ import (
 	domain "soundproof/internal/domain/model"
 	"soundproof/internal/domain/model/mock"
 	transport "soundproof/internal/transport/http"
+	jwtauth "soundproof/internal/transport/middleware/jwt"
 	"testing"
 	"time"
 
@@ -130,9 +132,7 @@ func TestRegisterUserInternalError(t *testing.T) {
 ////  GetUserByItsID ////
 /////////////////////////
 
-func TestGetUserByItsIDSuccess(t *testing.T) {
-
-	// id := 1
+func TestGetUserByItsIDFailByValidator(t *testing.T) {
 
 	response := &domain.ProfileResponse{
 		ID:        1,
@@ -155,18 +155,197 @@ func TestGetUserByItsIDSuccess(t *testing.T) {
 
 	router.GET(url, handler.GetUserByItsID)
 
+	token, err := jwtauth.CreateToken()
+	require.NoError(t, err)
+	require.NotNil(t, token)
+
 	idInput, err := json.Marshal(response.ID)
 	require.NoError(t, err)
 
-	service.EXPECT().GetByID(gomock.Any(), gomock.Eq(response.ID)).Return(response, nil).AnyTimes() // AnyTimes() fixed the issue
-
 	request, err := http.NewRequest(http.MethodGet, url, bytes.NewReader(idInput))
-	require.NoError(t, err)
 
 	// Serving the request
 	recorder := httptest.NewRecorder()
 	router.ServeHTTP(recorder, request)
 
 	// Asserting the response code
-	// require.Equal(t, http.StatusOK, recorder.Code)
+	require.Equal(t, http.StatusBadRequest, recorder.Code)
+}
+
+func TestLoginSuccess(t *testing.T) {
+
+	loginRequest := domain.LoginRequest{
+		Email:    "classic_theory@economics.gov.uk",
+		Password: "12345",
+	}
+
+	user := &domain.LoginResponse{
+		ID:           1,
+		FirstName:    "Adam",
+		LastName:     "Smith",
+		Email:        "classic_theory@economics.gov.uk",
+		Created:      time.Now(),
+		AccessToken:  "12345",
+		RefreshToken: "54321",
+	}
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	service := mock.NewMockService(ctrl)
+	handler := transport.NewHandler(zap.NewNop(), service)
+
+	router := gin.Default()
+
+	url := "/auth/login"
+
+	router.POST(url, handler.Login)
+
+	service.EXPECT().CheckCredentials(gomock.Any(), loginRequest).Return(true, user, nil)
+
+	idInput, err := json.Marshal(loginRequest)
+	require.NoError(t, err)
+
+	request, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(idInput))
+
+	// Serving the request
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, request)
+
+	// Asserting the response code
+	require.Equal(t, http.StatusOK, recorder.Code)
+}
+
+func TestLoginFailByValidation(t *testing.T) {
+
+	loginRequest := domain.LoginRequest{
+		Email:    "",
+		Password: "12345",
+	}
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	service := mock.NewMockService(ctrl)
+	handler := transport.NewHandler(zap.NewNop(), service)
+
+	router := gin.Default()
+
+	url := "/auth/login"
+
+	router.POST(url, handler.Login)
+
+	idInput, err := json.Marshal(loginRequest)
+	require.NoError(t, err)
+
+	request, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(idInput))
+
+	// Serving the request
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, request)
+
+	// Asserting the response code
+	require.Equal(t, http.StatusBadRequest, recorder.Code)
+}
+
+func TestLoginFailNotFound(t *testing.T) {
+
+	loginRequest := domain.LoginRequest{
+		Email:    "classic_theory@economics.gov.uk",
+		Password: "12345",
+	}
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	service := mock.NewMockService(ctrl)
+	handler := transport.NewHandler(zap.NewNop(), service)
+
+	router := gin.Default()
+
+	url := "/auth/login"
+
+	router.POST(url, handler.Login)
+
+	service.EXPECT().CheckCredentials(gomock.Any(), loginRequest).Return(false, nil, sql.ErrNoRows)
+
+	idInput, err := json.Marshal(loginRequest)
+	require.NoError(t, err)
+
+	request, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(idInput))
+
+	// Serving the request
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, request)
+
+	// Asserting the response code
+	require.Equal(t, http.StatusNotFound, recorder.Code)
+}
+
+func TestLoginFail_Internal_Server_Error(t *testing.T) {
+
+	loginRequest := domain.LoginRequest{
+		Email:    "classic_theory@economics.gov.uk",
+		Password: "12345",
+	}
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	service := mock.NewMockService(ctrl)
+	handler := transport.NewHandler(zap.NewNop(), service)
+
+	router := gin.Default()
+
+	url := "/auth/login"
+
+	router.POST(url, handler.Login)
+
+	service.EXPECT().CheckCredentials(gomock.Any(), loginRequest).Return(false, nil, sql.ErrConnDone)
+
+	idInput, err := json.Marshal(loginRequest)
+	require.NoError(t, err)
+
+	request, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(idInput))
+
+	// Serving the request
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, request)
+
+	// Asserting the response code
+	require.Equal(t, http.StatusInternalServerError, recorder.Code)
+}
+
+func Test_Login_Fail_Unauthorized(t *testing.T) {
+
+	loginRequest := domain.LoginRequest{
+		Email:    "classic_theory@economics.gov.uk",
+		Password: "12345",
+	}
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	service := mock.NewMockService(ctrl)
+	handler := transport.NewHandler(zap.NewNop(), service)
+
+	router := gin.Default()
+
+	url := "/auth/login"
+
+	router.POST(url, handler.Login)
+
+	service.EXPECT().CheckCredentials(gomock.Any(), loginRequest).Return(false, nil, fmt.Errorf("wrong password"))
+
+	idInput, err := json.Marshal(loginRequest)
+	require.NoError(t, err)
+
+	request, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(idInput))
+
+	// Serving the request
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, request)
+
+	// Asserting the response code
+	require.Equal(t, http.StatusUnauthorized, recorder.Code)
 }
