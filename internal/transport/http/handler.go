@@ -3,16 +3,13 @@ package transport
 import (
 	"database/sql"
 	"database/sql/driver"
-	"fmt"
 	"log"
 	"net/http"
 	"reflect"
 	domain "soundproof/internal/domain/model"
 	jwtauth "soundproof/internal/transport/middleware/jwt"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator"
 	"go.uber.org/zap"
 )
 
@@ -42,18 +39,13 @@ func (h Handler) RegisterUser(c *gin.Context) {
 	}
 }
 
-func (h Handler) GetUserByItsID(c *gin.Context) {
+func (h Handler) GetUser(c *gin.Context) {
 
-	// retrieve id from context
-	id := c.Param("id")
+	var req domain.LoginRequest
 
-	// launch validator
-	validate := validator.New()
-
-	// validate if id is an integer, required, greater than 0
-	errs := validate.Var(id, "required,number")
-	if errs != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": errs.Error()})
+	err := c.ShouldBindJSON(&req)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -63,14 +55,11 @@ func (h Handler) GetUserByItsID(c *gin.Context) {
 		return
 	}
 
-	// convert id to integer to pass it to the service level as an argument
-	id_int, err := strconv.Atoi(id)
-
-	resp, err := h.service.GetByID(c, id_int)
+	resp, err := h.service.GetUserProfile(c, req)
 	if err != nil {
 		log.Println(err)
 		if err == sql.ErrNoRows {
-			c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("User with ID: %v not found", id)})
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 			return
 		} else {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

@@ -16,7 +16,11 @@ import (
 )
 
 func TestGetUserByIDSuccess(t *testing.T) {
-	id := 1
+	req := &domain.LoginRequest{
+		Email: "p_korotkevitch@mail.ru",
+		Password: "12345",
+	}
+
 	user := &domain.ProfileResponse{
 		ID:        1,
 		FirstName: "Pavel",
@@ -27,11 +31,11 @@ func TestGetUserByIDSuccess(t *testing.T) {
 
 	ctr := gomock.NewController(t)
 	mockStorage := mock.NewMockStorage(ctr)
-	mockStorage.EXPECT().GetUserByID(&gin.Context{}, id).Times(1).Return(user, nil)
+	mockStorage.EXPECT().GetUserProfile(&gin.Context{}, req).Times(1).Return(user, nil)
 
 	rec := httptest.NewRecorder()
 
-	userResult, err := mockStorage.GetUserByID(&gin.Context{}, id)
+	userResult, err := mockStorage.GetUserProfile(&gin.Context{}, *req)
 	require.NoError(t, err)
 	require.Equal(t, user, userResult)
 	log.Printf("User %v", user)
@@ -43,7 +47,11 @@ func TestGetUserByIDSuccess(t *testing.T) {
 func TestGetUserByIDFailWithNegativeID(t *testing.T) {
 
 	// Arrange
-	id := -1
+	req := &domain.LoginRequest{
+		Email: "p_korotkevitch@mail.ru",
+		Password: "12345",
+	}
+
 	user := &domain.ProfileResponse{
 		ID:        1,
 		FirstName: "Pavel",
@@ -55,10 +63,10 @@ func TestGetUserByIDFailWithNegativeID(t *testing.T) {
 
 	ctr := gomock.NewController(t)
 	mockStorage := mock.NewMockStorage(ctr)
-	mockStorage.EXPECT().GetUserByID(gomock.Any(), id).Times(1).Return(nil, err)
+	mockStorage.EXPECT().GetUserProfile(gomock.Any(), req).Times(1).Return(nil, err)
 
 	// Act
-	userResult, err1 := mockStorage.GetUserByID(&gin.Context{}, id)
+	userResult, err1 := mockStorage.GetUserProfile(&gin.Context{}, *req)
 
 	// Assert
 	require.Error(t, err1)

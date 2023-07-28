@@ -153,7 +153,7 @@ func TestGetUserByItsIDFailByValidator(t *testing.T) {
 	url := fmt.Sprintf("/user/profile/%d", response.ID)
 	log.Println(url)
 
-	router.GET(url, handler.GetUserByItsID)
+	router.GET(url, handler.GetUser)
 
 	token, err := jwtauth.CreateToken()
 	require.NoError(t, err)

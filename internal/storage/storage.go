@@ -41,16 +41,16 @@ func (s *PostgreSQL) RegisterUserInDB(ctx *gin.Context, req Domain.UserRegistrat
 	return nil
 }
 
-func (s *PostgreSQL) GetUserByID(ctx *gin.Context, id int) (*domain.ProfileResponse, error) {
+func (s *PostgreSQL) GetUserProfile(ctx *gin.Context, req domain.LoginRequest) (*domain.ProfileResponse, error) {
 
 	var user domain.ProfileResponse
 
-	sqlRequest := "SELECT id, first_name, last_name, email, created_at FROM public.users WHERE id = $1"
+	sqlRequest := "SELECT id, first_name, last_name, email, created_at FROM public.users WHERE email = $1 AND password = $2"
 
-	err := s.db.Get(&user, sqlRequest, id)
+	err := s.db.Get(&user, sqlRequest, req.Email, req.Password)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("no results found")
+			return nil, fmt.Errorf("please provide valid credentials")
 		} else {
 			return nil, err
 		}

@@ -46,7 +46,7 @@ func main() {
 // define routes
 	router.POST("/auth/register", handler.RegisterUser)
 	router.POST("/auth/login", handler.Login)
-	router.GET("/user/profile/:id", handler.GetUserByItsID)
+	router.GET("/user/profile", handler.GetUser)
 	// router.PUT("/user/profile/:id", handler.UpdateUserByItsID)
 
 	if err := router.Run(); err != nil {

@@ -20,8 +20,8 @@ func (s *UserService) RegisterUser(c *gin.Context, req domain.UserRegistrationRe
 	return nil
 }
 
-func (s *UserService) GetByID(c *gin.Context, id int) (*domain.ProfileResponse, error) {
-	res, err := s.storage.GetUserByID(c, id)
+func (s *UserService) GetUserProfile(c *gin.Context, req domain.LoginRequest) (*domain.ProfileResponse, error) {
+	res, err := s.storage.GetUserProfile(c, req)
 	if err != nil {
 		return nil, err
 	}
