@@ -25,9 +25,15 @@ type PostgreSQL struct {
 func (s *PostgreSQL) RegisterUserInDB(ctx *gin.Context, req Domain.UserRegistrationRequest) error {
 	s.logger.Debug(">>>>>> Updating the database with user registration form")
 
+	// check if no user with the same email is found
+	err := s.checkForExisingUsers(req)
+	if err != nil {
+		return err
+	}
+
 	sqlRequest := "INSERT INTO public.users (first_name, last_name, email, password) VALUES ($1, $2, $3, $4)"
 
-	_, err := s.db.Exec(sqlRequest, req.FirstName, req.LastName, req.Email, req.Password)
+	_, err = s.db.Exec(sqlRequest, req.FirstName, req.LastName, req.Email, req.Password)
 	if err != nil {
 		return err
 	}
@@ -106,4 +112,18 @@ func NewPostgreSQL(logger *zap.Logger, conn *sqlx.DB) *PostgreSQL {
 		db:     conn,
 		logger: logger,
 	}
+}
+
+// checkForExisingUsers checks if no users with the same email address already exists
+func (s *PostgreSQL) checkForExisingUsers(req Domain.UserRegistrationRequest) error {
+	sqlRequestForDuplicates := "SELECT id FROM public.users WHERE email = $1"
+
+	var id string
+
+	err := s.db.Get(&id, sqlRequestForDuplicates, req.Email)
+
+	if err != sql.ErrNoRows {
+		return fmt.Errorf("user with this email has already been registered")
+	}
+	return nil
 }

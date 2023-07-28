@@ -46,8 +46,8 @@ func main() {
 // define routes
 	router.POST("/auth/register", handler.RegisterUser)
 	router.POST("/auth/login", handler.Login)
-
 	router.GET("/user/profile/:id", handler.GetUserByItsID)
+	// router.PUT("/user/profile/:id", handler.UpdateUserByItsID)
 
 	if err := router.Run(); err != nil {
 		log.Fatalf("Failed to run server: %v", err)
