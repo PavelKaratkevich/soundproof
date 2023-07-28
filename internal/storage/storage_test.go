@@ -2,7 +2,6 @@ package storage_test
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	domain "soundproof/internal/domain/model"
@@ -16,8 +15,8 @@ import (
 )
 
 func TestGetUserByIDSuccess(t *testing.T) {
-	req := &domain.LoginRequest{
-		Email: "p_korotkevitch@mail.ru",
+	req := domain.LoginRequest{
+		Email:    "p_korotkevitch@mail.ru",
 		Password: "12345",
 	}
 
@@ -35,11 +34,11 @@ func TestGetUserByIDSuccess(t *testing.T) {
 
 	rec := httptest.NewRecorder()
 
-	userResult, err := mockStorage.GetUserProfile(&gin.Context{}, *req)
+	userResult, err := mockStorage.GetUserProfile(&gin.Context{}, req)
 	require.NoError(t, err)
 	require.Equal(t, user, userResult)
-	log.Printf("User %v", user)
-	log.Printf("User result %v", userResult)
+	// log.Printf("User %v", user)
+	// log.Printf("User result %v", userResult)
 
 	require.Equal(t, http.StatusOK, rec.Code)
 }
@@ -47,8 +46,8 @@ func TestGetUserByIDSuccess(t *testing.T) {
 func TestGetUserByIDFailWithNegativeID(t *testing.T) {
 
 	// Arrange
-	req := &domain.LoginRequest{
-		Email: "p_korotkevitch@mail.ru",
+	req := domain.LoginRequest{
+		Email:    "p_korotkevitch@mail.ru",
 		Password: "12345",
 	}
 
@@ -66,7 +65,7 @@ func TestGetUserByIDFailWithNegativeID(t *testing.T) {
 	mockStorage.EXPECT().GetUserProfile(gomock.Any(), req).Times(1).Return(nil, err)
 
 	// Act
-	userResult, err1 := mockStorage.GetUserProfile(&gin.Context{}, *req)
+	userResult, err1 := mockStorage.GetUserProfile(&gin.Context{}, req)
 
 	// Assert
 	require.Error(t, err1)
