@@ -80,6 +80,20 @@ func (mr *MockStorageMockRecorder) RegisterUserInDB(ctx, req interface{}) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RegisterUserInDB", reflect.TypeOf((*MockStorage)(nil).RegisterUserInDB), ctx, req)
 }
 
+// UpdateUserProfile mocks base method.
+func (m *MockStorage) UpdateUserProfile(ctx *gin.Context, address, email string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateUserProfile", ctx, address, email)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateUserProfile indicates an expected call of UpdateUserProfile.
+func (mr *MockStorageMockRecorder) UpdateUserProfile(ctx, address, email interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUserProfile", reflect.TypeOf((*MockStorage)(nil).UpdateUserProfile), ctx, address, email)
+}
+
 // MockService is a mock of Service interface.
 type MockService struct {
 	ctrl     *gomock.Controller
@@ -146,4 +160,18 @@ func (m *MockService) RegisterUser(c *gin.Context, req domain.UserRegistrationRe
 func (mr *MockServiceMockRecorder) RegisterUser(c, req interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RegisterUser", reflect.TypeOf((*MockService)(nil).RegisterUser), c, req)
+}
+
+// UpdateUser mocks base method.
+func (m *MockService) UpdateUser(c *gin.Context, req domain.UpdateUserProfileRequest) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateUser", c, req)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateUser indicates an expected call of UpdateUser.
+func (mr *MockServiceMockRecorder) UpdateUser(c, req interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUser", reflect.TypeOf((*MockService)(nil).UpdateUser), c, req)
 }

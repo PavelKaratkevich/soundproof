@@ -4,5 +4,6 @@ CREATE TABLE "users" (
     "last_name" varchar NOT NULL,
     "email" varchar NOT NULL,
     "password" varchar NOT NULL,
-    "created_at" timestamptz NOT NULL DEFAULT (now())
+    "created_at" timestamptz NOT NULL DEFAULT (now()),
+    "metamask_address" varchar
 );

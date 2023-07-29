@@ -64,7 +64,7 @@ func (s *PostgreSQL) CheckUserCredentials(ctx *gin.Context, req domain.LoginRequ
 
 	var user domain.User
 
-	sqlRequest := "SELECT * FROM public.users WHERE email = $1"
+	sqlRequest := "SELECT id, first_name, last_name, password, email, created_at FROM public.users WHERE email = $1"
 
 	err := s.db.Get(&user, sqlRequest, req.Email)
 	if err != nil {
@@ -125,5 +125,19 @@ func (s *PostgreSQL) checkForExisingUsers(req Domain.UserRegistrationRequest) er
 	if err != sql.ErrNoRows {
 		return fmt.Errorf("user with this email has already been registered")
 	}
+	return nil
+}
+
+func (s *PostgreSQL) UpdateUserProfile(ctx *gin.Context, address, email string) error {
+	s.logger.Debug(">>>>>> Updating the user profile with Metamask address")
+	sqlRequest := "UPDATE public.users SET metamask_address=$1 WHERE email = $2"
+
+	// check for credentials so that each user can update only his/her own records
+
+	_, err := s.db.Exec(sqlRequest, address, email)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

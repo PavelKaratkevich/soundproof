@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+	"soundproof/pkg/eth"
 )
 
 type UserService struct {
@@ -14,6 +15,20 @@ type UserService struct {
 
 func (s *UserService) RegisterUser(c *gin.Context, req domain.UserRegistrationRequest) error {
 	err := s.storage.RegisterUserInDB(c, req)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *UserService) UpdateUser(c *gin.Context, req domain.UpdateUserProfileRequest) error {
+	
+	address, err := eth.ParseMetamaskSignedString(req.SignedMessage, req.Signature)
+	if err != nil {
+		return err
+	}
+
+	err = s.storage.UpdateUserProfile(c, address, req.Email)
 	if err != nil {
 		return err
 	}

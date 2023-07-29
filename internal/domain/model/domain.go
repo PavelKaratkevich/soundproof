@@ -13,6 +13,13 @@ type UserRegistrationRequest struct {
 	Email     string `json:"email" binding:"required,email"`
 }
 
+type UpdateUserProfileRequest struct {
+	Email           string `json:"email" binding:"required,email"`
+	Password        string `json:"password" binding:"required,min=6"`
+	SignedMessage string `json:"signed_message" binding:"required"`
+	Signature string `json:"signature" binding:"required"`
+}
+
 type User struct {
 	ID        int       `json:"id" binding:"required,alphanum"`
 	FirstName string    `json:"first_name" db:"first_name"`
@@ -58,6 +65,7 @@ type Storage interface {
 	RegisterUserInDB(ctx *gin.Context, req UserRegistrationRequest) error
 	CheckUserCredentials(ctx *gin.Context, req LoginRequest) (bool, *LoginResponse, error)
 	GetUserProfile(ctx *gin.Context, req LoginRequest) (*ProfileResponse, error)
+	UpdateUserProfile(ctx *gin.Context, address, email string) error
 }
 
 // Port for service implementation.
@@ -65,4 +73,5 @@ type Service interface {
 	RegisterUser(c *gin.Context, req UserRegistrationRequest) error
 	GetUserProfile(c *gin.Context, req LoginRequest) (*ProfileResponse, error)
 	CheckCredentials(c *gin.Context, req LoginRequest) (bool, *LoginResponse, error)
+	UpdateUser(c *gin.Context, req UpdateUserProfileRequest) error
 }

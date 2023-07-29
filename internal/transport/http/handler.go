@@ -39,6 +39,32 @@ func (h Handler) RegisterUser(c *gin.Context) {
 	}
 }
 
+func (h Handler) UpdateUser(c *gin.Context) {
+	var newRequest domain.UpdateUserProfileRequest
+
+	// Validating if all the fields are filled in
+	if err := c.ShouldBindJSON(&newRequest); err != nil {
+		log.Printf("Error: %v", err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := jwtauth.TokenValid(c.Request); err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Please provide a valid authentication token"})
+		return
+	}
+
+	err := h.service.UpdateUser(c, newRequest)
+	if err != nil {
+		log.Printf("Error: %v", err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	} else {
+		c.JSON(http.StatusOK, gin.H{"status:": "user info has been updated successfully"})
+		return
+	}
+}
+
 func (h Handler) GetUser(c *gin.Context) {
 
 	var req domain.LoginRequest

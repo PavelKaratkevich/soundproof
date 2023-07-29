@@ -7,7 +7,7 @@ import (
 	"github.com/storyicon/sigverify"
 )
 
-func parseMetamaskSignedString(signedMessage, signature string) (string, error) {
+func ParseMetamaskSignedString(signedMessage, signature string) (string, error) {
 
 	// convert message to bytes
 	msg := common.FromHex(signedMessage)

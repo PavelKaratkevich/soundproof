@@ -23,8 +23,8 @@ start-server:
 migrateup:
 	migrate -path db/migration -database "postgresql://root:postgres@localhost:5432/soundproof_db?sslmode=disable" -verbose up
 
-# migrateup1:
-# 	migrate -path db/migration -database "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable" -verbose up 1
+migrateup1:
+	migrate -path db/migration -database "postgresql://root:postgres@localhost:5432/soundproof_db?sslmode=disable" -verbose up 1
 
 migratedown:
 	migrate -path db/migration -database "postgresql://root:postgres@localhost:5432/soundproof_db?sslmode=disable" -verbose down
