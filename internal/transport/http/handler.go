@@ -98,6 +98,9 @@ func (h Handler) GetUser(c *gin.Context) {
 		return
 	}
 
+	//// checkCredentials /////
+
+
 	resp, err := h.service.GetUserProfile(c, req)
 	if err != nil {
 		log.Println(err)
