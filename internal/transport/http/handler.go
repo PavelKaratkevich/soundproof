@@ -49,20 +49,37 @@ func (h Handler) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	if err := jwtauth.TokenValid(c.Request); err != nil {
-		c.JSON(http.StatusForbidden, gin.H{"error": "Please provide a valid authentication token"})
-		return
+	ifValid, _, err := h.service.CheckCredentials(c, newRequest.Email, newRequest.Password)
+	if err != nil {
+		if err.Error() == "sql: no rows in result set" {
+			c.JSON(http.StatusNotFound, gin.H{"error": "User with this email address not found"})
+			return
+		} else if err.Error() == "wrong password" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+			return
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 	}
 
-	err := h.service.UpdateUser(c, newRequest)
-	if err != nil {
-		log.Printf("Error: %v", err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	} else {
-		c.JSON(http.StatusOK, gin.H{"status:": "user info has been updated successfully"})
-		return
+	if ifValid {
+		if err := jwtauth.TokenValid(c.Request); err != nil {
+			c.JSON(http.StatusForbidden, gin.H{"error": "Please provide a valid authentication token"})
+			return
+		}
+
+		err = h.service.UpdateUser(c, newRequest)
+		if err != nil {
+			log.Printf("Error: %v", err.Error())
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		} else {
+			c.JSON(http.StatusOK, gin.H{"status:": "user info has been updated successfully"})
+			return
+		}
 	}
+
 }
 
 func (h Handler) GetUser(c *gin.Context) {
@@ -106,7 +123,7 @@ func (h Handler) Login(c *gin.Context) {
 		return
 	}
 
-	ifValid, user, err := h.service.CheckCredentials(c, req)
+	ifValid, user, err := h.service.CheckCredentials(c, req.Email, req.Password)
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
 			c.JSON(http.StatusNotFound, gin.H{"error": "User with this email address not found"})

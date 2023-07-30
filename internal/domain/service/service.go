@@ -43,8 +43,8 @@ func (s *UserService) GetUserProfile(c *gin.Context, req domain.LoginRequest) (*
 	return res, nil
 }
 
-func (s *UserService) CheckCredentials(c *gin.Context, req domain.LoginRequest) (bool, *domain.LoginResponse, error) {
-	ifValid, user, err := s.storage.CheckUserCredentials(c, req)
+func (s *UserService) CheckCredentials(c *gin.Context, email, password string) (bool, *domain.LoginResponse, error) {
+	ifValid, user, err := s.storage.CheckUserCredentials(c, email, password)
 	if err != nil {
 		return false, nil, err
 	}

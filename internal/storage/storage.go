@@ -59,24 +59,24 @@ func (s *PostgreSQL) GetUserProfile(ctx *gin.Context, req domain.LoginRequest) (
 	return &user, nil
 }
 
-func (s *PostgreSQL) CheckUserCredentials(ctx *gin.Context, req domain.LoginRequest) (bool, *domain.LoginResponse, error) {
+func (s *PostgreSQL) CheckUserCredentials(ctx *gin.Context, email, password string) (bool, *domain.LoginResponse, error) {
 
 	var user domain.User
 
 	sqlRequest := "SELECT id, first_name, last_name, password, email, created_at FROM public.users WHERE email = $1"
 
-	err := s.db.Get(&user, sqlRequest, req.Email)
+	err := s.db.Get(&user, sqlRequest, email)
 	if err != nil {
 		s.logger.Debug(fmt.Sprintf("Error while retrieving user data from the database: %v", err.Error()))
 		return false, nil, err
 	}
 
-	if req.Password != user.Password {
+	if password != user.Password {
 		return false, nil, fmt.Errorf("wrong password")
 	}
 
 	// if creds are OK, we return user info (all but password)
-	if req.Email == user.Email || req.Password == user.Password {
+	if email == user.Email || password == user.Password {
 		return true, &domain.LoginResponse{
 			ID:        user.ID,
 			FirstName: user.FirstName,

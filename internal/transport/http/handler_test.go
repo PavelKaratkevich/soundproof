@@ -201,7 +201,7 @@ func TestLoginSuccess(t *testing.T) {
 
 	router.POST(url, handler.Login)
 
-	service.EXPECT().CheckCredentials(gomock.Any(), loginRequest).Return(true, user, nil)
+	service.EXPECT().CheckCredentials(gomock.Any(), loginRequest.Email, loginRequest.Password).Return(true, user, nil)
 
 	idInput, err := json.Marshal(loginRequest)
 	require.NoError(t, err)
@@ -267,7 +267,7 @@ func TestLoginFailNotFound(t *testing.T) {
 
 	router.POST(url, handler.Login)
 
-	service.EXPECT().CheckCredentials(gomock.Any(), loginRequest).Return(false, nil, sql.ErrNoRows)
+	service.EXPECT().CheckCredentials(gomock.Any(), loginRequest.Email, loginRequest.Password).Return(false, nil, sql.ErrNoRows)
 
 	idInput, err := json.Marshal(loginRequest)
 	require.NoError(t, err)
@@ -301,7 +301,7 @@ func TestLoginFail_Internal_Server_Error(t *testing.T) {
 
 	router.POST(url, handler.Login)
 
-	service.EXPECT().CheckCredentials(gomock.Any(), loginRequest).Return(false, nil, sql.ErrConnDone)
+	service.EXPECT().CheckCredentials(gomock.Any(), loginRequest.Email, loginRequest.Password).Return(false, nil, sql.ErrConnDone)
 
 	idInput, err := json.Marshal(loginRequest)
 	require.NoError(t, err)
@@ -335,7 +335,7 @@ func Test_Login_Fail_Unauthorized(t *testing.T) {
 
 	router.POST(url, handler.Login)
 
-	service.EXPECT().CheckCredentials(gomock.Any(), loginRequest).Return(false, nil, fmt.Errorf("wrong password"))
+	service.EXPECT().CheckCredentials(gomock.Any(), loginRequest.Email, loginRequest.Password).Return(false, nil, fmt.Errorf("wrong password"))
 
 	idInput, err := json.Marshal(loginRequest)
 	require.NoError(t, err)

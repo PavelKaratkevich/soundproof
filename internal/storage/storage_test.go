@@ -124,9 +124,9 @@ func TestCheckUserCredentialsSuccess(t *testing.T) {
 
 	ctr := gomock.NewController(t)
 	mockStorage := mock.NewMockStorage(ctr)
-	mockStorage.EXPECT().CheckUserCredentials(gomock.Any(), loginRequest).Times(1).Return(true, loginResponse, nil)
+	mockStorage.EXPECT().CheckUserCredentials(gomock.Any(), loginRequest.Email, loginRequest.Password).Times(1).Return(true, loginResponse, nil)
 
-	ifValid, userOutput, err := mockStorage.CheckUserCredentials(&gin.Context{}, loginRequest)
+	ifValid, userOutput, err := mockStorage.CheckUserCredentials(&gin.Context{}, loginRequest.Email, loginRequest.Password)
 	require.NoError(t, err)
 	require.True(t, ifValid)
 	require.Equal(t, loginResponse, userOutput)
@@ -141,9 +141,9 @@ func TestCheckUserCredentialsFail(t *testing.T) {
 
 	ctr := gomock.NewController(t)
 	mockStorage := mock.NewMockStorage(ctr)
-	mockStorage.EXPECT().CheckUserCredentials(gomock.Any(), loginRequest).Times(1).Return(false, nil, error)
+	mockStorage.EXPECT().CheckUserCredentials(gomock.Any(), loginRequest.Email, loginRequest.Password).Times(1).Return(false, nil, error)
 
-	ifValid, userOutput, err := mockStorage.CheckUserCredentials(&gin.Context{}, loginRequest)
+	ifValid, userOutput, err := mockStorage.CheckUserCredentials(&gin.Context{}, loginRequest.Email, loginRequest.Password)
 	require.Nil(t, userOutput)
 	require.Error(t, err)
 	require.False(t, ifValid)

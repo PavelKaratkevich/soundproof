@@ -63,7 +63,7 @@ type GetProfileRequest struct {
 // Port for database implementation.
 type Storage interface {
 	RegisterUserInDB(ctx *gin.Context, req UserRegistrationRequest) error
-	CheckUserCredentials(ctx *gin.Context, req LoginRequest) (bool, *LoginResponse, error)
+	CheckUserCredentials(ctx *gin.Context, email, password string) (bool, *LoginResponse, error)
 	GetUserProfile(ctx *gin.Context, req LoginRequest) (*ProfileResponse, error)
 	UpdateUserProfile(ctx *gin.Context, address, email string) error
 }
@@ -72,6 +72,6 @@ type Storage interface {
 type Service interface {
 	RegisterUser(c *gin.Context, req UserRegistrationRequest) error
 	GetUserProfile(c *gin.Context, req LoginRequest) (*ProfileResponse, error)
-	CheckCredentials(c *gin.Context, req LoginRequest) (bool, *LoginResponse, error)
+	CheckCredentials(c *gin.Context, email, password string) (bool, *LoginResponse, error)
 	UpdateUser(c *gin.Context, req UpdateUserProfileRequest) error
 }

@@ -36,9 +36,9 @@ func (m *MockStorage) EXPECT() *MockStorageMockRecorder {
 }
 
 // CheckUserCredentials mocks base method.
-func (m *MockStorage) CheckUserCredentials(ctx *gin.Context, req domain.LoginRequest) (bool, *domain.LoginResponse, error) {
+func (m *MockStorage) CheckUserCredentials(ctx *gin.Context, email, password string) (bool, *domain.LoginResponse, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CheckUserCredentials", ctx, req)
+	ret := m.ctrl.Call(m, "CheckUserCredentials", ctx, email, password)
 	ret0, _ := ret[0].(bool)
 	ret1, _ := ret[1].(*domain.LoginResponse)
 	ret2, _ := ret[2].(error)
@@ -46,9 +46,9 @@ func (m *MockStorage) CheckUserCredentials(ctx *gin.Context, req domain.LoginReq
 }
 
 // CheckUserCredentials indicates an expected call of CheckUserCredentials.
-func (mr *MockStorageMockRecorder) CheckUserCredentials(ctx, req interface{}) *gomock.Call {
+func (mr *MockStorageMockRecorder) CheckUserCredentials(ctx, email, password interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckUserCredentials", reflect.TypeOf((*MockStorage)(nil).CheckUserCredentials), ctx, req)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckUserCredentials", reflect.TypeOf((*MockStorage)(nil).CheckUserCredentials), ctx, email, password)
 }
 
 // GetUserProfile mocks base method.
@@ -118,9 +118,9 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 }
 
 // CheckCredentials mocks base method.
-func (m *MockService) CheckCredentials(c *gin.Context, req domain.LoginRequest) (bool, *domain.LoginResponse, error) {
+func (m *MockService) CheckCredentials(c *gin.Context, email, password string) (bool, *domain.LoginResponse, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CheckCredentials", c, req)
+	ret := m.ctrl.Call(m, "CheckCredentials", c, email, password)
 	ret0, _ := ret[0].(bool)
 	ret1, _ := ret[1].(*domain.LoginResponse)
 	ret2, _ := ret[2].(error)
@@ -128,9 +128,9 @@ func (m *MockService) CheckCredentials(c *gin.Context, req domain.LoginRequest) 
 }
 
 // CheckCredentials indicates an expected call of CheckCredentials.
-func (mr *MockServiceMockRecorder) CheckCredentials(c, req interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) CheckCredentials(c, email, password interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckCredentials", reflect.TypeOf((*MockService)(nil).CheckCredentials), c, req)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckCredentials", reflect.TypeOf((*MockService)(nil).CheckCredentials), c, email, password)
 }
 
 // GetUserProfile mocks base method.
