@@ -3,7 +3,6 @@ package storage
 import (
 	"database/sql"
 	"fmt"
-	"log"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -23,21 +22,21 @@ type PostgreSQL struct {
 }
 
 func (s *PostgreSQL) RegisterUserInDB(ctx *gin.Context, req Domain.UserRegistrationRequest) error {
-	s.logger.Debug(">>>>>> Updating the database with user registration form")
 
 	// check if no user with the same email is found
 	err := s.checkForExisingUsers(req)
 	if err != nil {
+		s.logger.Debug(fmt.Sprintf("Error while checking duplicated users in the database: %v", err.Error()))
 		return err
 	}
 
+	// insert data into the database
 	sqlRequest := "INSERT INTO public.users (first_name, last_name, email, password) VALUES ($1, $2, $3, $4)"
-
 	_, err = s.db.Exec(sqlRequest, req.FirstName, req.LastName, req.Email, req.Password)
 	if err != nil {
+		s.logger.Debug(fmt.Sprintf("Error while inserting user data into the database: %v", err.Error()))
 		return err
 	}
-
 	return nil
 }
 
@@ -52,6 +51,7 @@ func (s *PostgreSQL) GetUserProfile(ctx *gin.Context, req domain.LoginRequest) (
 		if err == sql.ErrNoRows {
 			return nil, fmt.Errorf("please provide valid credentials")
 		} else {
+			s.logger.Debug(fmt.Sprintf("Error while retrieving user data from the database: %v", err.Error()))
 			return nil, err
 		}
 	}
@@ -60,7 +60,6 @@ func (s *PostgreSQL) GetUserProfile(ctx *gin.Context, req domain.LoginRequest) (
 }
 
 func (s *PostgreSQL) CheckUserCredentials(ctx *gin.Context, req domain.LoginRequest) (bool, *domain.LoginResponse, error) {
-	s.logger.Debug(">>>>>> Checking if credentials are valid...................")
 
 	var user domain.User
 
@@ -68,6 +67,7 @@ func (s *PostgreSQL) CheckUserCredentials(ctx *gin.Context, req domain.LoginRequ
 
 	err := s.db.Get(&user, sqlRequest, req.Email)
 	if err != nil {
+		s.logger.Debug(fmt.Sprintf("Error while retrieving user data from the database: %v", err.Error()))
 		return false, nil, err
 	}
 
@@ -91,18 +91,16 @@ func (s *PostgreSQL) CheckUserCredentials(ctx *gin.Context, req domain.LoginRequ
 
 func ConnectPostgresDB(logger *zap.Logger, cfg *config.Config) *sqlx.DB {
 
-	logger.Debug(">>>>>>> Connecting PostgreSQL database")
-
 	// connect DB
 	db, err := sqlx.Open(cfg.Connection.DB_DRIVER, fmt.Sprintf("postgresql://%v:%v@%v:%v/%v?sslmode=disable", cfg.Connection.DB_USER, cfg.Connection.DB_PASSWORD, cfg.Connection.DB_HOST, cfg.Connection.DB_PORT, cfg.Connection.DB_TABLE))
 	if err != nil {
-		log.Fatalf("Error while opening DB: %v", err)
+		logger.Debug(fmt.Sprintf("Error while opening DB: %v", err))
 	}
 
 	// ping database
 	err = db.Ping()
 	if err != nil {
-		log.Fatalf("Error while pinging the database: %v", err)
+		logger.Debug(fmt.Sprintf("Error while pinging the database: %v", err))
 	}
 	return db
 }
@@ -129,13 +127,13 @@ func (s *PostgreSQL) checkForExisingUsers(req Domain.UserRegistrationRequest) er
 }
 
 func (s *PostgreSQL) UpdateUserProfile(ctx *gin.Context, address, email string) error {
-	s.logger.Debug(">>>>>> Updating the user profile with Metamask address")
 	sqlRequest := "UPDATE public.users SET metamask_address=$1 WHERE email = $2"
 
 	// check for credentials so that each user can update only his/her own records
 
 	_, err := s.db.Exec(sqlRequest, address, email)
 	if err != nil {
+		s.logger.Debug(fmt.Sprintf("Error while updating user profile: %v", err))
 		return err
 	}
 
