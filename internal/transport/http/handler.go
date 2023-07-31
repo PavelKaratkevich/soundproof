@@ -130,11 +130,11 @@ func (h Handler) Login(c *gin.Context) {
 	ifValid, user, err := h.service.CheckCredentials(c, req.Email, req.Password)
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
-			c.JSON(http.StatusNotFound, gin.H{"error": "User with this email address not found"})
+			c.JSON(http.StatusNotFound, gin.H{"error": "User with this email address is not found"})
 		} else if err.Error() == "wrong password" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
 		}
 	}
 
