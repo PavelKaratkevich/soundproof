@@ -12,6 +12,8 @@ lint-host: ## Run golangci-lint directly on host
 	golangci-lint run -c .golangci.yml -v
 	@echo "> Done!"
 
+# docker run --name soundproof_app -e DB_HOST=postgres_soundproff --network my_network -p 8000:8000 my_soundproof_app
+
 start:
 	make postgres
 	make createdb
