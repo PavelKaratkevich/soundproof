@@ -119,11 +119,14 @@ func (s *PostgreSQL) checkForExisingUsers(req Domain.UserRegistrationRequest) er
 	var id string
 
 	err := s.db.Get(&id, sqlRequestForDuplicates, req.Email)
-
-	if err != sql.ErrNoRows {
+	if id == "" {
+		return nil
+	} else if id != "" {
 		return fmt.Errorf("user with this email has already been registered")
+	} else {
+		return err
 	}
-	return nil
+	
 }
 
 func (s *PostgreSQL) UpdateUserProfile(ctx *gin.Context, address, email string) error {
@@ -131,7 +134,7 @@ func (s *PostgreSQL) UpdateUserProfile(ctx *gin.Context, address, email string) 
 
 	// check for credentials so that each user can update only his/her own records
 
-	_, err := s.db.Exec(sqlRequest, address, email)
+	err := s.db.Get(sqlRequest, address, email)
 	if err != nil {
 		s.logger.Debug(fmt.Sprintf("Error while updating user profile: %v", err))
 		return err
