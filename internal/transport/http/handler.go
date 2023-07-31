@@ -25,17 +25,18 @@ func (h Handler) RegisterUser(c *gin.Context) {
 	if err := c.ShouldBindJSON(&newRequest); err != nil {
 		log.Printf("Error: %v", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
 	}
 
 	err := h.service.RegisterUser(c, newRequest)
 	if err != nil {
 		log.Printf("Error: %v", err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		if err.Error() == "user with this email has already been registered" {
+			c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		}
 	} else {
 		c.JSON(http.StatusOK, gin.H{"status:": "user has been registered successfully"})
-		return
 	}
 }
 

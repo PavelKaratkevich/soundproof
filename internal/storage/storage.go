@@ -23,10 +23,9 @@ type PostgreSQL struct {
 
 func (s *PostgreSQL) RegisterUserInDB(ctx *gin.Context, req Domain.UserRegistrationRequest) error {
 
-	// check if no user with the same email is found
+	// check if no user with the same email is found\'
 	err := s.checkForExisingUsers(req)
 	if err != nil {
-		s.logger.Debug(fmt.Sprintf("Error while checking duplicated users in the database: %v", err.Error()))
 		return err
 	}
 
