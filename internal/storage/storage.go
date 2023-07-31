@@ -54,7 +54,6 @@ func (s *PostgreSQL) GetUserProfile(ctx *gin.Context, req domain.LoginRequest) (
 			return nil, err
 		}
 	}
-
 	return &user, nil
 }
 
@@ -129,11 +128,11 @@ func (s *PostgreSQL) checkForExisingUsers(req Domain.UserRegistrationRequest) er
 }
 
 func (s *PostgreSQL) UpdateUserProfile(ctx *gin.Context, address, email string) error {
-	sqlRequest := "UPDATE public.users SET metamask_address=$1 WHERE email = $2"
+	sqlRequest := "UPDATE public.users SET metamask_address = $1 WHERE email = $2"
 
 	// check for credentials so that each user can update only his/her own records
 
-	err := s.db.Get(sqlRequest, address, email)
+	_, err := s.db.Exec(sqlRequest, address, email)
 	if err != nil {
 		s.logger.Debug(fmt.Sprintf("Error while updating user profile: %v", err))
 		return err

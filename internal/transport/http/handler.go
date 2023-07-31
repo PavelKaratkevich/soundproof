@@ -1,7 +1,6 @@
 package transport
 
 import (
-	"database/sql"
 	"database/sql/driver"
 	"log"
 	"net/http"
@@ -59,7 +58,7 @@ func (h Handler) UpdateUser(c *gin.Context) {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			return
 		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
 			return
 		}
 	}
@@ -80,7 +79,6 @@ func (h Handler) UpdateUser(c *gin.Context) {
 			return
 		}
 	}
-
 }
 
 func (h Handler) GetUser(c *gin.Context) {
@@ -101,15 +99,14 @@ func (h Handler) GetUser(c *gin.Context) {
 
 	//// checkCredentials /////
 
-
 	resp, err := h.service.GetUserProfile(c, req)
 	if err != nil {
 		log.Println(err)
-		if err == sql.ErrNoRows {
-			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		if err.Error() == "please provide valid credentials" {
+			c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 			return
 		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
 			return
 		}
 	} else {
@@ -149,7 +146,6 @@ func (h Handler) Login(c *gin.Context) {
 
 		c.JSON(http.StatusOK, user)
 	}
-
 }
 
 func NewHandler(logger *zap.Logger, s domain.Service) *Handler {
