@@ -97,8 +97,6 @@ func (h Handler) GetUser(c *gin.Context) {
 		return
 	}
 
-	//// checkCredentials /////
-
 	resp, err := h.service.GetUserProfile(c, req)
 	if err != nil {
 		log.Println(err)
@@ -163,7 +161,6 @@ func ValidateValuer(field reflect.Value) interface{} {
 		if err == nil {
 			return val
 		}
-		// handle the error how you want
 	}
 
 	return nil

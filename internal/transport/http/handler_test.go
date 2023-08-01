@@ -84,12 +84,15 @@ func TestRegisterUserFail(t *testing.T) {
 	res, err := json.Marshal(req)
 	require.NoError(t, err)
 
+	service.EXPECT().RegisterUser(gomock.Any(), req).Times(1).Return(fmt.Errorf("error"))
+
 	request, _ := http.NewRequest(http.MethodPost, "/auth/register", bytes.NewReader(res))
 
 	// Serving the request
 	recorder := httptest.NewRecorder()
 	router.ServeHTTP(recorder, request)
 
+	log.Printf("Status code: %v", recorder.Code)
 	// Asserting the response code
 	require.Equal(t, http.StatusInternalServerError, recorder.Code)
 }

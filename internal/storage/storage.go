@@ -23,7 +23,7 @@ type PostgreSQL struct {
 
 func (s *PostgreSQL) RegisterUserInDB(ctx *gin.Context, req Domain.UserRegistrationRequest) error {
 
-	// check if no user with the same email is found\'
+	// check if no user with the same email is found
 	err := s.checkForExisingUsers(req)
 	if err != nil {
 		return err
@@ -100,6 +100,7 @@ func ConnectPostgresDB(logger *zap.Logger, cfg *config.Config) *sqlx.DB {
 	if err != nil {
 		logger.Debug(fmt.Sprintf("Error while pinging the database: %v", err))
 	}
+	
 	return db
 }
 

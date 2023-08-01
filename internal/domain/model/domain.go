@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// User registration part
 type UserRegistrationRequest struct {
 	FirstName string `json:"first_name" binding:"required,alphanum"`
 	LastName  string `json:"last_name" binding:"required"`
@@ -13,6 +14,7 @@ type UserRegistrationRequest struct {
 	Email     string `json:"email" binding:"required,email"`
 }
 
+// User update part
 type UpdateUserProfileRequest struct {
 	Email           string `json:"email" binding:"required,email"`
 	Password        string `json:"password" binding:"required,min=6"`
@@ -20,6 +22,7 @@ type UpdateUserProfileRequest struct {
 	Signature string `json:"signature" binding:"required"`
 }
 
+// Domain user
 type User struct {
 	ID        int       `json:"id" binding:"required,alphanum"`
 	FirstName string    `json:"first_name" db:"first_name"`
@@ -29,11 +32,13 @@ type User struct {
 	Created   time.Time `json:"created_at" db:"created_at"`
 }
 
+// Login request
 type LoginRequest struct {
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required"`
 }
 
+// Login response
 type LoginResponse struct {
 	ID           int       `json:"id"`
 	FirstName    string    `json:"first_name" db:"first_name"`
@@ -44,6 +49,11 @@ type LoginResponse struct {
 	RefreshToken string    `json:"refresh_token" db:"refresh_token"`
 }
 
+// Profile request/response part
+type GetProfileRequest struct {
+	ID int `json:"id" db:"id" binding:"required,alphanum"`
+}
+
 type ProfileResponse struct {
 	ID        int       `json:"id" db:"id"`
 	FirstName string    `json:"first_name" db:"first_name"`
@@ -52,15 +62,7 @@ type ProfileResponse struct {
 	Created   time.Time `json:"created_at" db:"created_at"`
 }
 
-type GetProfileRequest struct {
-	ID int `json:"id" db:"id" binding:"required,alphanum"`
-}
-
-// type UserRegistrationResponse struct {
-// 	userID int `json:"user_id" binding:"required"`
-// }
-
-// Port for database implementation.
+// Port for storage implementation.
 type Storage interface {
 	RegisterUserInDB(ctx *gin.Context, req UserRegistrationRequest) error
 	CheckUserCredentials(ctx *gin.Context, email, password string) (bool, *LoginResponse, error)
