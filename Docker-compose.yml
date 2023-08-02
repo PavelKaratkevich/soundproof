@@ -18,8 +18,29 @@ services:
       ports:
         - 8080:8080
       environment:
-        - DB_HOST=soundproof-postgres-1 
+        SERVER_PORT: '8080'
+        DB_DRIVER: 'postgres'
+        DB_USER: 'root'
+        DB_PASSWORD: 'postgres'
+        DB_HOST: 'soundproof-postgres-1'
+        DB_PORT: '5432'
+        DB_TABLE: 'soundproof_db'
+
+        LOG_LEVEL: 'debug'
+        LOG_FORMAT: 'console' # console or json      
       depends_on:
         - postgres
       links:
-      - postgres
+        - postgres
+
+    migration:
+      build:
+        context: .
+        dockerfile: Dockerfile
+      environment:
+        DB_HOST: 'soundproof-postgres-1'
+      command: ["./wait-for-it/wait-for-it.sh", "postgres:5432", "--", "make", "migrateup"]
+      links:
+        - postgres
+      depends_on:
+        - postgres

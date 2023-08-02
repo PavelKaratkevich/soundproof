@@ -12,8 +12,6 @@ lint-host: ## Run golangci-lint directly on host
 	golangci-lint run -c .golangci.yml -v
 	@echo "> Done!"
 
-# docker run --name soundproof_app -e DB_HOST=postgres_soundproff --network my_network -p 8000:8000 my_soundproof_app
-
 start:
 	make postgres
 	make createdb
@@ -23,21 +21,14 @@ start-server:
 	go run cmd/main.go  
 
 migrateup:
-	migrate -path db/migration -database "postgresql://root:postgres@localhost:5432/soundproof_db?sslmode=disable" -verbose up
-
-migrateup1:
-	migrate -path db/migration -database "postgresql://root:postgres@localhost:5432/soundproof_db?sslmode=disable" -verbose up 1
+	migrate -path ./db/migration -database "postgresql://root:postgres@$(DB_HOST):5432/soundproof_db?sslmode=disable" -verbose up
 
 migratedown:
-	migrate -path db/migration -database "postgresql://root:postgres@localhost:5432/soundproof_db?sslmode=disable" -verbose down
-
-# migratedown1:
-# 	migrate -path db/migration -database "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable" -verbose down 1
+	migrate -path ./db/migration -database "postgresql://root:postgres@$(DB_HOST):5432/soundproof_db?sslmode=disable" -verbose down
 
 mock:
 	mockgen -package mock -destination internal/domain/model/mock/mock.go -source=internal/domain/model/domain.go
 	mockgen -package mock -destination internal/domain/service/mock/service_mock.go -source=internal/domain/service/service.go
-
 
 test:
 	go test ./... -v -coverpkg=./...
