@@ -7,6 +7,9 @@ createdb:
 dropdb:
 	docker exec -it postgres_soundproff dropdb soundproof_db
 
+swagger:
+	swag init -dir ./cmd,./internal/transport/http/
+
 lint-host: ## Run golangci-lint directly on host
 	@echo "> Linting..."
 	golangci-lint run -c .golangci.yml -v
@@ -33,4 +36,4 @@ mock:
 test:
 	go test ./... -v -coverpkg=./...
 
-.PHONY: postgres createdb dropdb start migrateup start-server lint-host mock test
+.PHONY: postgres createdb dropdb start migrateup start-server lint-host mock test swagger

@@ -17,6 +17,15 @@ type Handler struct {
 	service domain.Service
 }
 
+// RegisterUser		 	godoc
+// @Summary      		Register a user
+// @Description  		Register a user by passing a User Registration Request via the context
+// @Accept       		json
+// @Produce      		json
+// @Success      		200  {object}  error
+// @Failure      		403  {object}  error
+// @Failure      		500  {object}  error
+// @Router       		/auth/register/ [post]
 func (h Handler) RegisterUser(c *gin.Context) {
 	var newRequest domain.UserRegistrationRequest
 
@@ -39,6 +48,15 @@ func (h Handler) RegisterUser(c *gin.Context) {
 	}
 }
 
+// UpdateUser		 	godoc
+// @Summary      		Updates a user
+// @Description  		Updates a user by passing a User Update Request via the context
+// @Accept       		json
+// @Produce      		json
+// @Success      		200  {object}  error
+// @Failure      		403  {object}  error
+// @Failure      		500  {object}  error
+// @Router       		/user/profile [put]
 func (h Handler) UpdateUser(c *gin.Context) {
 	var newRequest domain.UpdateUserProfileRequest
 
@@ -81,6 +99,15 @@ func (h Handler) UpdateUser(c *gin.Context) {
 	}
 }
 
+// GetUser			 	godoc
+// @Summary      		Gets a user
+// @Description  		Gets a user by passing a User Update Request via the context
+// @Accept       		json
+// @Produce      		json
+// @Success      		200  {object}  error
+// @Failure      		403  {object}  error
+// @Failure      		500  {object}  error
+// @Router       		/user/profile [get]
 func (h Handler) GetUser(c *gin.Context) {
 
 	var req domain.LoginRequest
@@ -113,6 +140,15 @@ func (h Handler) GetUser(c *gin.Context) {
 	}
 }
 
+// Login			 	godoc
+// @Summary      		Login form
+// @Description  		Login form
+// @Accept       		json
+// @Produce      		json
+// @Success      		200  {object}  error
+// @Failure      		403  {object}  error
+// @Failure      		500  {object}  error
+// @Router       		/auth/login [post]
 func (h Handler) Login(c *gin.Context) {
 	var req domain.LoginRequest
 

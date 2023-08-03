@@ -1,0 +1,86 @@
+basePath: /api/v1
+host: localhost:8080
+info:
+  contact:
+    email: p.korotkevitch@gmail.com
+    name: Pavel Karatkevich
+    url: https://www.linkedin.com/in/pavel-karatkevich-236461178/
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Soundproof service
+  version: "2.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login form
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema: {}
+        "403":
+          description: Forbidden
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Login form
+  /auth/register/:
+    post:
+      consumes:
+      - application/json
+      description: Register a user by passing a User Registration Request via the
+        context
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema: {}
+        "403":
+          description: Forbidden
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Register a user
+  /user/profile:
+    get:
+      consumes:
+      - application/json
+      description: Gets a user by passing a User Update Request via the context
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema: {}
+        "403":
+          description: Forbidden
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Gets a user
+    put:
+      consumes:
+      - application/json
+      description: Updates a user by passing a User Update Request via the context
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema: {}
+        "403":
+          description: Forbidden
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Updates a user
+swagger: "2.0"
