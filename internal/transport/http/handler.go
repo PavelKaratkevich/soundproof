@@ -49,12 +49,13 @@ func (h Handler) RegisterUser(c *gin.Context) {
 }
 
 // UpdateUser		 	godoc
-// @Summary      		Updates a user
-// @Description  		Updates a user by passing a User Update Request via the context
+// @Summary      		Update user info
+// @Description  		Update user info by passing a User Update Request via the context. Parses signature and signed string from Metamask and stores a Metamask public address into the database
 // @Accept       		json
 // @Produce      		json
 // @Success      		200  {object}  error
-// @Failure      		403  {object}  error
+// @Failure      		401  {object}  error
+// @Failure      		404  {object}  error
 // @Failure      		500  {object}  error
 // @Router       		/user/profile [put]
 func (h Handler) UpdateUser(c *gin.Context) {
@@ -101,10 +102,10 @@ func (h Handler) UpdateUser(c *gin.Context) {
 
 // GetUser			 	godoc
 // @Summary      		Gets a user
-// @Description  		Gets a user by passing a User Update Request via the context
+// @Description  		Received login request via context, checks JWT token and retrieves user info
 // @Accept       		json
 // @Produce      		json
-// @Success      		200  {object}  error
+// @Success      		200  {object} error
 // @Failure      		403  {object}  error
 // @Failure      		500  {object}  error
 // @Router       		/user/profile [get]
@@ -142,7 +143,7 @@ func (h Handler) GetUser(c *gin.Context) {
 
 // Login			 	godoc
 // @Summary      		Login form
-// @Description  		Login form
+// @Description  		Login form which received login/password, generates JWT token and returns a login response (user info)
 // @Accept       		json
 // @Produce      		json
 // @Success      		200  {object}  error

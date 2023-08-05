@@ -57,8 +57,8 @@ func main() {
 	handler := transport.NewHandler(logger, service)
 
 	// programmatically set swagger info
-	docs.SwaggerInfo.Title = "Swagger Example API"
-	docs.SwaggerInfo.Description = "This is a sample server Petstore server."
+	docs.SwaggerInfo.Title = "Swagger Soundproof API"
+	docs.SwaggerInfo.Description = "This is a soundproof API performed as a test assignment."
 	docs.SwaggerInfo.Version = "1.0"
 	docs.SwaggerInfo.Host = "localhost:8080"
 	docs.SwaggerInfo.BasePath = "/api/v1"

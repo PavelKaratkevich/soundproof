@@ -26,7 +26,7 @@ const docTemplate = `{
     "paths": {
         "/auth/login": {
             "post": {
-                "description": "Login form",
+                "description": "Login form which received login/password, generates JWT token and returns a login response (user info)",
                 "consumes": [
                     "application/json"
                 ],
@@ -78,7 +78,7 @@ const docTemplate = `{
         },
         "/user/profile": {
             "get": {
-                "description": "Gets a user by passing a User Update Request via the context",
+                "description": "Received login request via context, checks JWT token and retrieves user info",
                 "consumes": [
                     "application/json"
                 ],
@@ -89,7 +89,9 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "OK",
-                        "schema": {}
+                        "schema": {
+                            "type": "type"
+                        }
                     },
                     "403": {
                         "description": "Forbidden",
@@ -102,21 +104,25 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Updates a user by passing a User Update Request via the context",
+                "description": "Update user info by passing a User Update Request via the context. Parses signature and signed string from Metamask and stores a Metamask public address into the database",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Updates a user",
+                "summary": "Update user info",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {}
                     },
-                    "403": {
-                        "description": "Forbidden",
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {}
                     },
                     "500": {

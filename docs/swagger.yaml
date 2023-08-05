@@ -15,7 +15,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: Login form
+      description: Login form which received login/password, generates JWT token and
+        returns a login response (user info)
       produces:
       - application/json
       responses:
@@ -52,13 +53,15 @@ paths:
     get:
       consumes:
       - application/json
-      description: Gets a user by passing a User Update Request via the context
+      description: Received login request via context, checks JWT token and retrieves
+        user info
       produces:
       - application/json
       responses:
         "200":
           description: OK
-          schema: {}
+          schema:
+            type: type
         "403":
           description: Forbidden
           schema: {}
@@ -69,18 +72,23 @@ paths:
     put:
       consumes:
       - application/json
-      description: Updates a user by passing a User Update Request via the context
+      description: Update user info by passing a User Update Request via the context.
+        Parses signature and signed string from Metamask and stores a Metamask public
+        address into the database
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema: {}
-        "403":
-          description: Forbidden
+        "401":
+          description: Unauthorized
+          schema: {}
+        "404":
+          description: Not Found
           schema: {}
         "500":
           description: Internal Server Error
           schema: {}
-      summary: Updates a user
+      summary: Update user info
 swagger: "2.0"
