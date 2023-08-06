@@ -3,10 +3,9 @@ package jwtauth
 import (
 	"fmt"
 	"net/http"
+	"soundproof/config"
 	"strings"
 	"time"
-
-	"soundproof/config"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/kelseyhightower/envconfig"
@@ -27,7 +26,7 @@ func CreateToken() (*TokenDetails, error) {
 
 	var err error
 
-	//Creating Access Token
+	// Creating Access Token
 	atClaims := jwt.MapClaims{}
 	atClaims["authorized"] = true
 	atClaims["exp"] = td.AtExpires
@@ -54,7 +53,7 @@ func CreateToken() (*TokenDetails, error) {
 
 func ExtractToken(r *http.Request) string {
 	bearToken := r.Header.Get("Authorization")
-	//normally Authorization the_token_xxx
+	// normally Authorization the_token_xxx
 	strArr := strings.Split(bearToken, " ")
 	if len(strArr) == 2 {
 		return strArr[1]

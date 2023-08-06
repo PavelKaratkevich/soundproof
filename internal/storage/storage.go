@@ -2,14 +2,13 @@ package storage
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
+	"soundproof/config"
 
-	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 	"go.uber.org/zap"
 
-	"soundproof/config"
-	Domain "soundproof/internal/domain/model"
 	domain "soundproof/internal/domain/model"
 
 	"github.com/jmoiron/sqlx"
@@ -21,8 +20,7 @@ type PostgreSQL struct {
 	db     *sqlx.DB
 }
 
-func (s *PostgreSQL) RegisterUserInDB(ctx *gin.Context, req Domain.UserRegistrationRequest) error {
-
+func (s *PostgreSQL) RegisterUserInDB(req domain.UserRegistrationRequest) error {
 	// check if no user with the same email is found
 	err := s.checkForExisingUsers(req)
 	if err != nil {
@@ -39,26 +37,23 @@ func (s *PostgreSQL) RegisterUserInDB(ctx *gin.Context, req Domain.UserRegistrat
 	return nil
 }
 
-func (s *PostgreSQL) GetUserProfile(ctx *gin.Context, req domain.LoginRequest) (*domain.ProfileResponse, error) {
-
+func (s *PostgreSQL) GetUserProfile(req domain.LoginRequest) (*domain.ProfileResponse, error) {
 	var user domain.ProfileResponse
 
 	sqlRequest := "SELECT id, first_name, last_name, email, created_at FROM public.users WHERE email = $1 AND password = $2"
 
 	err := s.db.Get(&user, sqlRequest, req.Email, req.Password)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return nil, fmt.Errorf("please provide valid credentials")
-		} else {
-			s.logger.Debug(fmt.Sprintf("Error while retrieving user data from the database: %v", err.Error()))
-			return nil, err
 		}
+		s.logger.Debug(fmt.Sprintf("Error while retrieving user data from the database: %v", err.Error()))
+		return nil, err
 	}
 	return &user, nil
 }
 
-func (s *PostgreSQL) CheckUserCredentials(ctx *gin.Context, email, password string) (bool, *domain.LoginResponse, error) {
-
+func (s *PostgreSQL) CheckUserCredentials(email, password string) (bool, *domain.LoginResponse, error) {
 	var user domain.User
 
 	sqlRequest := "SELECT id, first_name, last_name, password, email, created_at FROM public.users WHERE email = $1"
@@ -82,16 +77,16 @@ func (s *PostgreSQL) CheckUserCredentials(ctx *gin.Context, email, password stri
 			Email:     user.Email,
 			Created:   user.Created,
 		}, nil
-	} else {
-		s.logger.Debug(fmt.Sprintf("Error while getting a user from DB: %v", err))
-		return false, nil, fmt.Errorf("unknown server error")
 	}
+	s.logger.Debug(fmt.Sprintf("Error while getting a user from DB: %v", err))
+	return false, nil, fmt.Errorf("unknown server error")
 }
 
 func ConnectPostgresDB(logger *zap.Logger, cfg *config.Config) *sqlx.DB {
-
 	// connect DB
-	db, err := sqlx.Open(cfg.Connection.DB_DRIVER, fmt.Sprintf("postgresql://%v:%v@%v:%v/%v?sslmode=disable", cfg.Connection.DB_USER, cfg.Connection.DB_PASSWORD, cfg.Connection.DB_HOST, cfg.Connection.DB_PORT, cfg.Connection.DB_TABLE))
+	db, err := sqlx.Open(cfg.Connection.DB_DRIVER,
+		fmt.Sprintf("postgresql://%v:%v@%v:%v/%v?sslmode=disable",
+			cfg.Connection.DB_USER, cfg.Connection.DB_PASSWORD, cfg.Connection.DB_HOST, cfg.Connection.DB_PORT, cfg.Connection.DB_TABLE))
 	if err != nil {
 		logger.Debug(fmt.Sprintf("Error while opening DB: %v", err))
 	}
@@ -101,7 +96,7 @@ func ConnectPostgresDB(logger *zap.Logger, cfg *config.Config) *sqlx.DB {
 	if err != nil {
 		logger.Debug(fmt.Sprintf("Error while pinging the database: %v", err))
 	}
-	
+
 	return db
 }
 
@@ -112,8 +107,8 @@ func NewPostgreSQL(logger *zap.Logger, conn *sqlx.DB) *PostgreSQL {
 	}
 }
 
-// checkForExisingUsers checks if no users with the same email address already exists
-func (s *PostgreSQL) checkForExisingUsers(req Domain.UserRegistrationRequest) error {
+// checkForExisingUsers checks if no users with the same email address already exists.
+func (s *PostgreSQL) checkForExisingUsers(req domain.UserRegistrationRequest) error {
 	sqlRequestForDuplicates := "SELECT id FROM public.users WHERE email = $1"
 
 	var id string
@@ -127,10 +122,9 @@ func (s *PostgreSQL) checkForExisingUsers(req Domain.UserRegistrationRequest) er
 		s.logger.Debug(fmt.Sprintf("Error while checking for existing users:: %v", err))
 		return err
 	}
-	
 }
 
-func (s *PostgreSQL) UpdateUserProfile(ctx *gin.Context, address, email string) error {
+func (s *PostgreSQL) UpdateUserProfile(address, email string) error {
 	sqlRequest := "UPDATE public.users SET metamask_address = $1 WHERE email = $2"
 
 	// check for credentials so that each user can update only his/her own records

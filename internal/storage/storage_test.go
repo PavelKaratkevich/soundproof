@@ -9,7 +9,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 )
@@ -30,11 +29,11 @@ func TestGetUserByIDSuccess(t *testing.T) {
 
 	ctr := gomock.NewController(t)
 	mockStorage := mock.NewMockStorage(ctr)
-	mockStorage.EXPECT().GetUserProfile(&gin.Context{}, req).Times(1).Return(user, nil)
+	mockStorage.EXPECT().GetUserProfile(req).Times(1).Return(user, nil)
 
 	rec := httptest.NewRecorder()
 
-	userResult, err := mockStorage.GetUserProfile(&gin.Context{}, req)
+	userResult, err := mockStorage.GetUserProfile(req)
 	require.NoError(t, err)
 	require.Equal(t, user, userResult)
 	// log.Printf("User %v", user)
@@ -44,7 +43,6 @@ func TestGetUserByIDSuccess(t *testing.T) {
 }
 
 func TestGetUserByIDFailWithNegativeID(t *testing.T) {
-
 	// Arrange
 	req := domain.LoginRequest{
 		Email:    "p_korotkevitch@mail.ru",
@@ -62,10 +60,10 @@ func TestGetUserByIDFailWithNegativeID(t *testing.T) {
 
 	ctr := gomock.NewController(t)
 	mockStorage := mock.NewMockStorage(ctr)
-	mockStorage.EXPECT().GetUserProfile(gomock.Any(), req).Times(1).Return(nil, err)
+	mockStorage.EXPECT().GetUserProfile(req).Times(1).Return(nil, err)
 
 	// Act
-	userResult, err1 := mockStorage.GetUserProfile(&gin.Context{}, req)
+	userResult, err1 := mockStorage.GetUserProfile(req)
 
 	// Assert
 	require.Error(t, err1)
@@ -83,9 +81,9 @@ func TestRegisterUserInDBSuccess(t *testing.T) {
 
 	ctr := gomock.NewController(t)
 	mockStorage := mock.NewMockStorage(ctr)
-	mockStorage.EXPECT().RegisterUserInDB(gomock.Any(), req).Times(1).Return(nil)
+	mockStorage.EXPECT().RegisterUserInDB(req).Times(1).Return(nil)
 
-	err := mockStorage.RegisterUserInDB(&gin.Context{}, req)
+	err := mockStorage.RegisterUserInDB(req)
 	require.NoError(t, err)
 }
 
@@ -101,9 +99,9 @@ func TestRegisterUserInDBFail(t *testing.T) {
 
 	ctr := gomock.NewController(t)
 	mockStorage := mock.NewMockStorage(ctr)
-	mockStorage.EXPECT().RegisterUserInDB(gomock.Any(), req).Times(1).Return(err)
+	mockStorage.EXPECT().RegisterUserInDB(req).Times(1).Return(err)
 
-	err = mockStorage.RegisterUserInDB(&gin.Context{}, req)
+	err = mockStorage.RegisterUserInDB(req)
 	require.Error(t, err)
 }
 
@@ -124,9 +122,9 @@ func TestCheckUserCredentialsSuccess(t *testing.T) {
 
 	ctr := gomock.NewController(t)
 	mockStorage := mock.NewMockStorage(ctr)
-	mockStorage.EXPECT().CheckUserCredentials(gomock.Any(), loginRequest.Email, loginRequest.Password).Times(1).Return(true, loginResponse, nil)
+	mockStorage.EXPECT().CheckUserCredentials(loginRequest.Email, loginRequest.Password).Times(1).Return(true, loginResponse, nil)
 
-	ifValid, userOutput, err := mockStorage.CheckUserCredentials(&gin.Context{}, loginRequest.Email, loginRequest.Password)
+	ifValid, userOutput, err := mockStorage.CheckUserCredentials(loginRequest.Email, loginRequest.Password)
 	require.NoError(t, err)
 	require.True(t, ifValid)
 	require.Equal(t, loginResponse, userOutput)
@@ -137,15 +135,16 @@ func TestCheckUserCredentialsFail(t *testing.T) {
 		Email:    "p.korotkevitch@gmail.com",
 		Password: "12345",
 	}
-	error := fmt.Errorf("Please provide valid credentials")
+	err := fmt.Errorf("Please provide valid credentials")
+	require.Error(t, err)
 
 	ctr := gomock.NewController(t)
 	mockStorage := mock.NewMockStorage(ctr)
-	mockStorage.EXPECT().CheckUserCredentials(gomock.Any(), loginRequest.Email, loginRequest.Password).Times(1).Return(false, nil, error)
+	mockStorage.EXPECT().CheckUserCredentials(loginRequest.Email, loginRequest.Password).Times(1).Return(false, nil, err)
 
-	ifValid, userOutput, err := mockStorage.CheckUserCredentials(&gin.Context{}, loginRequest.Email, loginRequest.Password)
+	ifValid, userOutput, err := mockStorage.CheckUserCredentials(loginRequest.Email, loginRequest.Password)
 	require.Nil(t, userOutput)
 	require.Error(t, err)
 	require.False(t, ifValid)
-	require.Equal(t, err, error)
+	require.Equal(t, err, err)
 }

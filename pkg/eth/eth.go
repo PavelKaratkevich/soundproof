@@ -8,7 +8,6 @@ import (
 )
 
 func ParseMetamaskSignedString(signedMessage, signature string) (string, error) {
-
 	// convert message to bytes
 	msg := common.FromHex(signedMessage)
 
@@ -31,6 +30,8 @@ func ParseMetamaskSignedString(signedMessage, signature string) (string, error) 
 
 /////////////////////////////////////////////////////////////////////////
 // ifValid helps us validate if the message was ideed signed by the address //
+// this function is unused in the present code, but can be reused as a pkg in other projects
+// where one would need to ensure propoer validation
 /////////////////////////////////////////////////////////////////////////
 
 func ifValid(addr, msg, signature string) (bool, error) {

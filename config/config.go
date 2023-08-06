@@ -19,15 +19,15 @@ type Config struct {
 		ServerHost string `envconfig:"SERVER_HOST" default:"localhost"`
 		ServerPort int    `envconfig:"SERVER_PORT" default:"8080"`
 
-		DB_DRIVER string `envconfig:"DB_DRIVER" default:"postgres"`
-		DB_USER string `envconfig:"DB_USER" default:"root"`
+		DB_DRIVER   string `envconfig:"DB_DRIVER" default:"postgres"`
+		DB_USER     string `envconfig:"DB_USER" default:"root"`
 		DB_PASSWORD string `envconfig:"DB_PASSWORD" default:"postgres"`
-		DB_HOST string    `envconfig:"DB_HOST" default:"localhost"`
-		DB_PORT string `envconfig:"DB_PORT" default:"5432"`
-		DB_TABLE string `envconfig:"DB_TABLE" default:"soundproof_db"`
+		DB_HOST     string `envconfig:"DB_HOST" default:"localhost"`
+		DB_PORT     string `envconfig:"DB_PORT" default:"5432"`
+		DB_TABLE    string `envconfig:"DB_TABLE" default:"soundproof_db"`
 	}
 	Authorization struct {
-		ACCESS_SECRET string `envconfig:"ACCESS_SECRET" default:"1234567890"`
+		ACCESS_SECRET  string `envconfig:"ACCESS_SECRET" default:"1234567890"`
 		REFRESH_SECRET string `envconfig:"REFRESH_SECRET" default:"0987654321"`
 	}
 }

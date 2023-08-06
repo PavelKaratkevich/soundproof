@@ -25,7 +25,7 @@ type Handler struct {
 // @Success      		200  {object}  error
 // @Failure      		403  {object}  error
 // @Failure      		500  {object}  error
-// @Router       		/auth/register/ [post]
+// @Router       		/auth/register/ [post].
 func (h Handler) RegisterUser(c *gin.Context) {
 	var newRequest domain.UserRegistrationRequest
 
@@ -33,9 +33,10 @@ func (h Handler) RegisterUser(c *gin.Context) {
 	if err := c.ShouldBindJSON(&newRequest); err != nil {
 		log.Printf("Error: %v", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
-	err := h.service.RegisterUser(c, newRequest)
+	err := h.service.RegisterUser(newRequest)
 	if err != nil {
 		log.Printf("Error: %v", err.Error())
 		if err.Error() == "user with this email has already been registered" {
@@ -50,14 +51,15 @@ func (h Handler) RegisterUser(c *gin.Context) {
 
 // UpdateUser		 	godoc
 // @Summary      		Update user info
-// @Description  		Update user info by passing a User Update Request via the context. Parses signature and signed string from Metamask and stores a Metamask public address into the database
+/* @Description  		Update user info by passing a User Update Request via the context.
+Parses signature and signed string from Metamask and stores a Metamask public address into the database */
 // @Accept       		json
 // @Produce      		json
 // @Success      		200  {object}  error
 // @Failure      		401  {object}  error
 // @Failure      		404  {object}  error
 // @Failure      		500  {object}  error
-// @Router       		/user/profile [put]
+// @Router       		/user/profile [put].
 func (h Handler) UpdateUser(c *gin.Context) {
 	var newRequest domain.UpdateUserProfileRequest
 
@@ -68,7 +70,7 @@ func (h Handler) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	ifValid, _, err := h.service.CheckCredentials(c, newRequest.Email, newRequest.Password)
+	ifValid, _, err := h.service.CheckCredentials(newRequest.Email, newRequest.Password)
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
 			c.JSON(http.StatusNotFound, gin.H{"error": "User with this email address not found"})
@@ -88,15 +90,13 @@ func (h Handler) UpdateUser(c *gin.Context) {
 			return
 		}
 
-		err = h.service.UpdateUser(c, newRequest)
+		err = h.service.UpdateUser(newRequest)
 		if err != nil {
 			log.Printf("Error: %v", err.Error())
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
-		} else {
-			c.JSON(http.StatusOK, gin.H{"status:": "user info has been updated successfully"})
-			return
 		}
+		c.JSON(http.StatusOK, gin.H{"status:": "user info has been updated successfully"})
 	}
 }
 
@@ -108,9 +108,8 @@ func (h Handler) UpdateUser(c *gin.Context) {
 // @Success      		200  {object} error
 // @Failure      		403  {object}  error
 // @Failure      		500  {object}  error
-// @Router       		/user/profile [get]
+// @Router       		/user/profile [get].
 func (h Handler) GetUser(c *gin.Context) {
-
 	var req domain.LoginRequest
 
 	err := c.ShouldBindJSON(&req)
@@ -125,16 +124,14 @@ func (h Handler) GetUser(c *gin.Context) {
 		return
 	}
 
-	resp, err := h.service.GetUserProfile(c, req)
+	resp, err := h.service.GetUserProfile(req)
 	if err != nil {
 		log.Println(err)
 		if err.Error() == "please provide valid credentials" {
 			c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 			return
-		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
-			return
 		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
 	} else {
 		c.JSON(http.StatusOK, resp)
 		return
@@ -149,7 +146,7 @@ func (h Handler) GetUser(c *gin.Context) {
 // @Success      		200  {object}  error
 // @Failure      		403  {object}  error
 // @Failure      		500  {object}  error
-// @Router       		/auth/login [post]
+// @Router       		/auth/login [post].
 func (h Handler) Login(c *gin.Context) {
 	var req domain.LoginRequest
 
@@ -159,7 +156,7 @@ func (h Handler) Login(c *gin.Context) {
 		return
 	}
 
-	ifValid, user, err := h.service.CheckCredentials(c, req.Email, req.Password)
+	ifValid, user, err := h.service.CheckCredentials(req.Email, req.Password)
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
 			c.JSON(http.StatusNotFound, gin.H{"error": "User with this email address is not found"})
@@ -191,9 +188,7 @@ func NewHandler(logger *zap.Logger, s domain.Service) *Handler {
 }
 
 func ValidateValuer(field reflect.Value) interface{} {
-
 	if valuer, ok := field.Interface().(driver.Valuer); ok {
-
 		val, err := valuer.Value()
 		if err == nil {
 			return val

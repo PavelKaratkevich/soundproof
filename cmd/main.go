@@ -12,7 +12,7 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
-	_ "soundproof/docs"
+	// _ "soundproof/docs".
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -27,9 +27,8 @@ import (
 // @license.name  	Apache 2.0
 // @license.url   	http://www.apache.org/licenses/LICENSE-2.0.html
 // @host      		localhost:8080
-// @BasePath  		/api/v1
+// @BasePath  		/api/v1.
 func main() {
-
 	// load configuration
 	cfg, err := config.NewConfig()
 	if err != nil {

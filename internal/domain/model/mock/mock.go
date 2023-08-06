@@ -8,7 +8,6 @@ import (
 	reflect "reflect"
 	domain "soundproof/internal/domain/model"
 
-	gin "github.com/gin-gonic/gin"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -36,9 +35,9 @@ func (m *MockStorage) EXPECT() *MockStorageMockRecorder {
 }
 
 // CheckUserCredentials mocks base method.
-func (m *MockStorage) CheckUserCredentials(ctx *gin.Context, email, password string) (bool, *domain.LoginResponse, error) {
+func (m *MockStorage) CheckUserCredentials(email, password string) (bool, *domain.LoginResponse, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CheckUserCredentials", ctx, email, password)
+	ret := m.ctrl.Call(m, "CheckUserCredentials", email, password)
 	ret0, _ := ret[0].(bool)
 	ret1, _ := ret[1].(*domain.LoginResponse)
 	ret2, _ := ret[2].(error)
@@ -46,52 +45,52 @@ func (m *MockStorage) CheckUserCredentials(ctx *gin.Context, email, password str
 }
 
 // CheckUserCredentials indicates an expected call of CheckUserCredentials.
-func (mr *MockStorageMockRecorder) CheckUserCredentials(ctx, email, password interface{}) *gomock.Call {
+func (mr *MockStorageMockRecorder) CheckUserCredentials(email, password interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckUserCredentials", reflect.TypeOf((*MockStorage)(nil).CheckUserCredentials), ctx, email, password)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckUserCredentials", reflect.TypeOf((*MockStorage)(nil).CheckUserCredentials), email, password)
 }
 
 // GetUserProfile mocks base method.
-func (m *MockStorage) GetUserProfile(ctx *gin.Context, req domain.LoginRequest) (*domain.ProfileResponse, error) {
+func (m *MockStorage) GetUserProfile(req domain.LoginRequest) (*domain.ProfileResponse, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetUserProfile", ctx, req)
+	ret := m.ctrl.Call(m, "GetUserProfile", req)
 	ret0, _ := ret[0].(*domain.ProfileResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetUserProfile indicates an expected call of GetUserProfile.
-func (mr *MockStorageMockRecorder) GetUserProfile(ctx, req interface{}) *gomock.Call {
+func (mr *MockStorageMockRecorder) GetUserProfile(req interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserProfile", reflect.TypeOf((*MockStorage)(nil).GetUserProfile), ctx, req)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserProfile", reflect.TypeOf((*MockStorage)(nil).GetUserProfile), req)
 }
 
 // RegisterUserInDB mocks base method.
-func (m *MockStorage) RegisterUserInDB(ctx *gin.Context, req domain.UserRegistrationRequest) error {
+func (m *MockStorage) RegisterUserInDB(req domain.UserRegistrationRequest) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "RegisterUserInDB", ctx, req)
+	ret := m.ctrl.Call(m, "RegisterUserInDB", req)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // RegisterUserInDB indicates an expected call of RegisterUserInDB.
-func (mr *MockStorageMockRecorder) RegisterUserInDB(ctx, req interface{}) *gomock.Call {
+func (mr *MockStorageMockRecorder) RegisterUserInDB(req interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RegisterUserInDB", reflect.TypeOf((*MockStorage)(nil).RegisterUserInDB), ctx, req)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RegisterUserInDB", reflect.TypeOf((*MockStorage)(nil).RegisterUserInDB), req)
 }
 
 // UpdateUserProfile mocks base method.
-func (m *MockStorage) UpdateUserProfile(ctx *gin.Context, address, email string) error {
+func (m *MockStorage) UpdateUserProfile(address, email string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateUserProfile", ctx, address, email)
+	ret := m.ctrl.Call(m, "UpdateUserProfile", address, email)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // UpdateUserProfile indicates an expected call of UpdateUserProfile.
-func (mr *MockStorageMockRecorder) UpdateUserProfile(ctx, address, email interface{}) *gomock.Call {
+func (mr *MockStorageMockRecorder) UpdateUserProfile(address, email interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUserProfile", reflect.TypeOf((*MockStorage)(nil).UpdateUserProfile), ctx, address, email)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUserProfile", reflect.TypeOf((*MockStorage)(nil).UpdateUserProfile), address, email)
 }
 
 // MockService is a mock of Service interface.
@@ -118,9 +117,9 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 }
 
 // CheckCredentials mocks base method.
-func (m *MockService) CheckCredentials(c *gin.Context, email, password string) (bool, *domain.LoginResponse, error) {
+func (m *MockService) CheckCredentials(email, password string) (bool, *domain.LoginResponse, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CheckCredentials", c, email, password)
+	ret := m.ctrl.Call(m, "CheckCredentials", email, password)
 	ret0, _ := ret[0].(bool)
 	ret1, _ := ret[1].(*domain.LoginResponse)
 	ret2, _ := ret[2].(error)
@@ -128,50 +127,50 @@ func (m *MockService) CheckCredentials(c *gin.Context, email, password string) (
 }
 
 // CheckCredentials indicates an expected call of CheckCredentials.
-func (mr *MockServiceMockRecorder) CheckCredentials(c, email, password interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) CheckCredentials(email, password interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckCredentials", reflect.TypeOf((*MockService)(nil).CheckCredentials), c, email, password)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckCredentials", reflect.TypeOf((*MockService)(nil).CheckCredentials), email, password)
 }
 
 // GetUserProfile mocks base method.
-func (m *MockService) GetUserProfile(c *gin.Context, req domain.LoginRequest) (*domain.ProfileResponse, error) {
+func (m *MockService) GetUserProfile(req domain.LoginRequest) (*domain.ProfileResponse, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetUserProfile", c, req)
+	ret := m.ctrl.Call(m, "GetUserProfile", req)
 	ret0, _ := ret[0].(*domain.ProfileResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetUserProfile indicates an expected call of GetUserProfile.
-func (mr *MockServiceMockRecorder) GetUserProfile(c, req interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) GetUserProfile(req interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserProfile", reflect.TypeOf((*MockService)(nil).GetUserProfile), c, req)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserProfile", reflect.TypeOf((*MockService)(nil).GetUserProfile), req)
 }
 
 // RegisterUser mocks base method.
-func (m *MockService) RegisterUser(c *gin.Context, req domain.UserRegistrationRequest) error {
+func (m *MockService) RegisterUser(req domain.UserRegistrationRequest) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "RegisterUser", c, req)
+	ret := m.ctrl.Call(m, "RegisterUser", req)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // RegisterUser indicates an expected call of RegisterUser.
-func (mr *MockServiceMockRecorder) RegisterUser(c, req interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) RegisterUser(req interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RegisterUser", reflect.TypeOf((*MockService)(nil).RegisterUser), c, req)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RegisterUser", reflect.TypeOf((*MockService)(nil).RegisterUser), req)
 }
 
 // UpdateUser mocks base method.
-func (m *MockService) UpdateUser(c *gin.Context, req domain.UpdateUserProfileRequest) error {
+func (m *MockService) UpdateUser(req domain.UpdateUserProfileRequest) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateUser", c, req)
+	ret := m.ctrl.Call(m, "UpdateUser", req)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // UpdateUser indicates an expected call of UpdateUser.
-func (mr *MockServiceMockRecorder) UpdateUser(c, req interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) UpdateUser(req interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUser", reflect.TypeOf((*MockService)(nil).UpdateUser), c, req)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUser", reflect.TypeOf((*MockService)(nil).UpdateUser), req)
 }

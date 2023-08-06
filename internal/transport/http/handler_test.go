@@ -26,7 +26,6 @@ import (
 ///////////////////////
 
 func TestRegisterUserSuccess(t *testing.T) {
-
 	req := domain.UserRegistrationRequest{
 		FirstName: "Adam",
 		LastName:  "Smith",
@@ -47,7 +46,7 @@ func TestRegisterUserSuccess(t *testing.T) {
 	res, err := json.Marshal(req)
 	require.NoError(t, err)
 
-	service.EXPECT().RegisterUser(gomock.Any(), req).Times(1).Return(nil)
+	service.EXPECT().RegisterUser(req).Times(1).Return(nil)
 
 	request, err := http.NewRequest(http.MethodPost, "/auth/register", bytes.NewReader(res))
 	require.NoError(t, err)
@@ -63,7 +62,6 @@ func TestRegisterUserSuccess(t *testing.T) {
 }
 
 func TestRegisterUserFail(t *testing.T) {
-
 	req := domain.UserRegistrationRequest{
 		FirstName: "Adam",
 		LastName:  "Smith",
@@ -84,7 +82,7 @@ func TestRegisterUserFail(t *testing.T) {
 	res, err := json.Marshal(req)
 	require.NoError(t, err)
 
-	service.EXPECT().RegisterUser(gomock.Any(), req).Times(1).Return(fmt.Errorf("error"))
+	service.EXPECT().RegisterUser(req).Times(1).Return(fmt.Errorf("error"))
 
 	request, _ := http.NewRequest(http.MethodPost, "/auth/register", bytes.NewReader(res))
 
@@ -98,7 +96,6 @@ func TestRegisterUserFail(t *testing.T) {
 }
 
 func TestRegisterUserInternalError(t *testing.T) {
-
 	req := domain.UserRegistrationRequest{
 		FirstName: "Adam",
 		LastName:  "Smith",
@@ -119,7 +116,7 @@ func TestRegisterUserInternalError(t *testing.T) {
 	res, err := json.Marshal(req)
 	require.NoError(t, err)
 
-	service.EXPECT().RegisterUser(gomock.Any(), req).Times(1).Return(fmt.Errorf("error"))
+	service.EXPECT().RegisterUser(req).Times(1).Return(fmt.Errorf("error"))
 
 	request, _ := http.NewRequest(http.MethodPost, "/auth/register", bytes.NewReader(res))
 
@@ -136,7 +133,6 @@ func TestRegisterUserInternalError(t *testing.T) {
 /////////////////////////
 
 func TestGetUserByItsIDFailByValidator(t *testing.T) {
-
 	response := &domain.ProfileResponse{
 		ID:        1,
 		FirstName: "Adam",
@@ -166,6 +162,7 @@ func TestGetUserByItsIDFailByValidator(t *testing.T) {
 	require.NoError(t, err)
 
 	request, err := http.NewRequest(http.MethodGet, url, bytes.NewReader(idInput))
+	require.NoError(t, err)
 
 	// Serving the request
 	recorder := httptest.NewRecorder()
@@ -176,7 +173,6 @@ func TestGetUserByItsIDFailByValidator(t *testing.T) {
 }
 
 func TestLoginSuccess(t *testing.T) {
-
 	loginRequest := domain.LoginRequest{
 		Email:    "classic_theory@economics.gov.uk",
 		Password: "12345",
@@ -204,12 +200,13 @@ func TestLoginSuccess(t *testing.T) {
 
 	router.POST(url, handler.Login)
 
-	service.EXPECT().CheckCredentials(gomock.Any(), loginRequest.Email, loginRequest.Password).Return(true, user, nil)
+	service.EXPECT().CheckCredentials(loginRequest.Email, loginRequest.Password).Return(true, user, nil)
 
 	idInput, err := json.Marshal(loginRequest)
 	require.NoError(t, err)
 
 	request, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(idInput))
+	require.NoError(t, err)
 
 	// Serving the request
 	recorder := httptest.NewRecorder()
@@ -220,7 +217,6 @@ func TestLoginSuccess(t *testing.T) {
 }
 
 func TestLoginFailByValidation(t *testing.T) {
-
 	loginRequest := domain.LoginRequest{
 		Email:    "",
 		Password: "12345",
@@ -241,7 +237,7 @@ func TestLoginFailByValidation(t *testing.T) {
 	idInput, err := json.Marshal(loginRequest)
 	require.NoError(t, err)
 
-	request, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(idInput))
+	request, _ := http.NewRequest(http.MethodPost, url, bytes.NewReader(idInput))
 
 	// Serving the request
 	recorder := httptest.NewRecorder()
@@ -252,7 +248,6 @@ func TestLoginFailByValidation(t *testing.T) {
 }
 
 func TestLoginFailNotFound(t *testing.T) {
-
 	loginRequest := domain.LoginRequest{
 		Email:    "classic_theory@economics.gov.uk",
 		Password: "12345",
@@ -270,12 +265,12 @@ func TestLoginFailNotFound(t *testing.T) {
 
 	router.POST(url, handler.Login)
 
-	service.EXPECT().CheckCredentials(gomock.Any(), loginRequest.Email, loginRequest.Password).Return(false, nil, sql.ErrNoRows)
+	service.EXPECT().CheckCredentials(loginRequest.Email, loginRequest.Password).Return(false, nil, sql.ErrNoRows)
 
 	idInput, err := json.Marshal(loginRequest)
 	require.NoError(t, err)
 
-	request, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(idInput))
+	request, _ := http.NewRequest(http.MethodPost, url, bytes.NewReader(idInput))
 
 	// Serving the request
 	recorder := httptest.NewRecorder()
@@ -286,7 +281,6 @@ func TestLoginFailNotFound(t *testing.T) {
 }
 
 func TestLoginFail_Internal_Server_Error(t *testing.T) {
-
 	loginRequest := domain.LoginRequest{
 		Email:    "classic_theory@economics.gov.uk",
 		Password: "12345",
@@ -304,12 +298,12 @@ func TestLoginFail_Internal_Server_Error(t *testing.T) {
 
 	router.POST(url, handler.Login)
 
-	service.EXPECT().CheckCredentials(gomock.Any(), loginRequest.Email, loginRequest.Password).Return(false, nil, sql.ErrConnDone)
+	service.EXPECT().CheckCredentials(loginRequest.Email, loginRequest.Password).Return(false, nil, sql.ErrConnDone)
 
 	idInput, err := json.Marshal(loginRequest)
 	require.NoError(t, err)
 
-	request, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(idInput))
+	request, _ := http.NewRequest(http.MethodPost, url, bytes.NewReader(idInput))
 
 	// Serving the request
 	recorder := httptest.NewRecorder()
@@ -320,7 +314,6 @@ func TestLoginFail_Internal_Server_Error(t *testing.T) {
 }
 
 func Test_Login_Fail_Unauthorized(t *testing.T) {
-
 	loginRequest := domain.LoginRequest{
 		Email:    "classic_theory@economics.gov.uk",
 		Password: "12345",
@@ -338,12 +331,12 @@ func Test_Login_Fail_Unauthorized(t *testing.T) {
 
 	router.POST(url, handler.Login)
 
-	service.EXPECT().CheckCredentials(gomock.Any(), loginRequest.Email, loginRequest.Password).Return(false, nil, fmt.Errorf("wrong password"))
+	service.EXPECT().CheckCredentials(loginRequest.Email, loginRequest.Password).Return(false, nil, fmt.Errorf("wrong password"))
 
 	idInput, err := json.Marshal(loginRequest)
 	require.NoError(t, err)
 
-	request, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(idInput))
+	request, _ := http.NewRequest(http.MethodPost, url, bytes.NewReader(idInput))
 
 	// Serving the request
 	recorder := httptest.NewRecorder()

@@ -15,11 +15,6 @@ lint-host: ## Run golangci-lint directly on host
 	golangci-lint run -c .golangci.yml -v
 	@echo "> Done!"
 
-start:
-	make postgres
-	make createdb
-	make start server
-
 start-server:
 	go run cmd/main.go  
 
