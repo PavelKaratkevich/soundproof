@@ -83,6 +83,7 @@ func (s *PostgreSQL) CheckUserCredentials(ctx *gin.Context, email, password stri
 			Created:   user.Created,
 		}, nil
 	} else {
+		s.logger.Debug(fmt.Sprintf("Error while getting a user from DB: %v", err))
 		return false, nil, fmt.Errorf("unknown server error")
 	}
 }
@@ -123,6 +124,7 @@ func (s *PostgreSQL) checkForExisingUsers(req Domain.UserRegistrationRequest) er
 	} else if id != "" {
 		return fmt.Errorf("user with this email has already been registered")
 	} else {
+		s.logger.Debug(fmt.Sprintf("Error while checking for existing users:: %v", err))
 		return err
 	}
 	

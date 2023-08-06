@@ -8,7 +8,7 @@ The project is represented by a RESTful API with the following endpoints:
 
 Architecture:
     The application features 3-layer hexagonal architecture:
-    - domain/core layer
+    - domain/core layer with two ports/interfaces: Storate interface and Service interface
     - service layer
     - transport layer
 Dependencies are directed outwards and inner layers are not aware of what is happening on the outer layer(s).
