@@ -12,8 +12,6 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
-	// _ "soundproof/docs".
-
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
@@ -63,7 +61,7 @@ func main() {
 	docs.SwaggerInfo.BasePath = "/api/v1"
 	docs.SwaggerInfo.Schemes = []string{"http"}
 
-	// launch a router
+	// launch a Gin router
 	router := gin.Default()
 
 	// define routes
@@ -73,8 +71,10 @@ func main() {
 	router.PUT("/user/profile", handler.UpdateUser)
 
 	// swagger
-	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
+	if gin.Mode() == gin.DebugMode {
+		router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	}
+	
 	if err := router.Run(); err != nil {
 		log.Fatalf("Failed to run server: %v", err)
 	}
