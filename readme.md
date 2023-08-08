@@ -1,40 +1,41 @@
-This is a test assignement for Soundproof project
+**This is a test assignement for Soundproof project**
 
-1. ASSIGNMENT
-● Overview
+**1. ASSIGNMENT**
+
+Overview
 - Build simple restful backend with golang (Gin): 15 point
 - Database: PostgreSQL: 5 point
 - Build Login/Register/Profile APIs: 25 point
 
-● Register: POST /auth/register: 3 point
+Register: POST /auth/register: 3 point
 Register api with email & password, store on User table with DB
 
-● Login: POST /auth/login: 5 point
+Login: POST /auth/login: 5 point
 User Login API, return user object & jwt auth token
 
-● Get Profile API: GET /user/profile: 7 point
+Get Profile API: GET /user/profile: 7 point
 Get User profile API, must authenticate with jwt token on middleware
 
-● Update Profile API: PUT /user/profile:10 point
+Update Profile API: PUT /user/profile:10 point
 Update User Profile API, From signed str which from Metamask, convert it to
 public Address and update it on DB, auth with jwt on middleware.
 - Integrate with Swagger: 5 point
 - Total: 50 point
 
-2. PROJECT ARCHITECTURE
+**2. PROJECT ARCHITECTURE**
 The application features 3-layer hexagonal architecture:
     - domain/core layer with two ports/interfaces: Storate interface and Service interface
     - service layer
     - transport layer
 Dependencies are directed outwards and inner layers are not aware of what is happening on outer layer(s).
 
-3. The project represents a RESTful API with the following endpoints:
+**3. The project represents a RESTful API with the following endpoints:**
     - "/auth/register" (POST): user registration form which helps to create users with unique email addresses. No users with duplicated emails are allowed.
 	- "/auth/login" (POST): this is a user login form which checks login (email) and password of an user, and if successful, it returns an access and a refresh JWT tokens for operations described below;
 	- "/user/profile" (GET): retrieves user info in case of a valid JWT token;
 	- "/user/profile" (PUT): parses Metamask signature and a string signed by Metamask and saves an Etherium public address into the Postgres database.
 
-4. DEFAULT ENVIRONMENT VARIABLES 
+**4. DEFAULT ENVIRONMENT VARIABLES **
     GIN_MODE=debug
     LOG_LEVEL=debug
     SERVER_HOST=localhost
@@ -50,7 +51,7 @@ Dependencies are directed outwards and inner layers are not aware of what is hap
 
 All environment variables can be overwritten in Docker-compose file, Dockerfile, or during the deployment phase of the application.
 
-5. TESTING
+**5. TESTING**
 
 TO RUN THE SERVER AND TEST IT WITH REQUESTS YOU CAN USE THE FOLLOWING:
 
