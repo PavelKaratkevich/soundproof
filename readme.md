@@ -35,19 +35,31 @@ Dependencies are directed outwards and inner layers are not aware of what is hap
 	- "/user/profile" (GET): retrieves user info in case of a valid JWT token;
 	- "/user/profile" (PUT): parses Metamask signature and a string signed by Metamask and saves an Etherium public address into the Postgres database.
 
-**4. DEFAULT ENVIRONMENT VARIABLES **
-    GIN_MODE=debug
-    LOG_LEVEL=debug
-    SERVER_HOST=localhost
-    SERVER_PORT=8080
-    DB_DRIVER=postgres
-    DB_USER=root
-    DB_PASSWORD=postgres
-    DB_HOST=localhost
-    DB_PORT=5432
-    DB_TABLE=soundproof_db
-    ACCESS_SECRET=1234567890
-    REFRESH_SECRET=0987654321
+**4. DEFAULT ENVIRONMENT VARIABLES**
+
+GIN_MODE=debug
+
+LOG_LEVEL=debug
+
+SERVER_HOST=localhost
+
+SERVER_PORT=8080
+
+DB_DRIVER=postgres
+
+DB_USER=root
+
+DB_PASSWORD=postgres
+
+DB_HOST=localhost
+
+DB_PORT=5432
+
+DB_TABLE=soundproof_db
+
+ACCESS_SECRET=1234567890
+
+REFRESH_SECRET=0987654321
 
 All environment variables can be overwritten in Docker-compose file, Dockerfile, or during the deployment phase of the application.
 
@@ -63,10 +75,14 @@ TO RUN THE SERVER AND TEST IT WITH REQUESTS YOU CAN USE THE FOLLOWING:
 OR
 
 1.2 with the following set of commands:
-    $ make postgres
-    $ make createdb
-    $ make migrateup
-    $ make start-server
+
+$ make postgres
+
+$ make createdb
+
+$ make migrateup
+
+$ make start-server
 
 <!-- Run Register User command -->
 2. curl --header "Content-Type: application/json" \
